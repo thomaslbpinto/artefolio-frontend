@@ -1,29 +1,60 @@
+@import 'tailwindcss';
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  --background: #fafafa;
+  --foreground: #121212;
+  --muted-foreground: #6f6f6f;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --border: #e0e0e0;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --primary: #c7372f;
+  --primary-foreground: #ffffff;
+
+  --error: #dc2626;
+  --error-background: #fef2f2;
+  --error-border: #fecaca;
+}
+
+.dark {
+  --background: #121212;
+  --foreground: #fafafa;
+  --muted-foreground: #9a9a9a;
+
+  --border: #2a2a2a;
+
+  --error: #f87171;
+  --error-background: #1a0f0f;
+  --error-border: #3f1f1f;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-border: var(--border);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-error: var(--error);
+  --color-error-background: var(--error-background);
+  --color-error-border: var(--error-border);
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px var(--color-background) inset;
+  -webkit-text-fill-color: var(--color-foreground);
+}
+
+html,
+body,
+#root {
+  height: 100%;
 }
