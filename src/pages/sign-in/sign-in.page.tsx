@@ -2,25 +2,113 @@ import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme.toggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useState, type SubmitEvent } from 'react';
+import { useState, type ChangeEvent, type SubmitEvent } from 'react';
+import { useAuth } from '@/contexts/auth.context';
+import { useNavigate } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
 import { SiGoogle } from 'react-icons/si';
+import z from 'zod';
+
+const signInSchema = z.object({
+  email: z
+    .email('Please enter a valid email')
+    .max(255, 'Email must not exceed 255 characters'),
+  password: z
+    .string()
+    .min(1, 'Password is required')
+    .max(255, 'Password must not exceed 255 characters'),
+});
+
+type FormErrors = {
+  email?: string;
+  password?: string;
+  submit?: string;
+};
 
 export default function SignInPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [serverError, setServerError] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [loading, setLoading] = useState(false);
+  const [continuingWithGoogle, setContinuingWithGoogle] = useState(false);
+  const { signIn, googleSignIn } = useAuth();
+  const navigate = useNavigate();
 
-  async function handleSignInWithGoogle() {
-    console.log('Sign in with Google');
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
+  };
+
+  const googleLogin = useGoogleLogin({
+    flow: 'auth-code',
+    onSuccess: async (codeResponse) => {
+      setContinuingWithGoogle(false);
+      setErrors({});
+
+      try {
+        await googleSignIn({ code: codeResponse.code });
+        navigate('/');
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          setErrors({
+            submit:
+              'No account is linked to this Google account. Please sign up first',
+          });
+        } else {
+          setErrors({
+            submit: 'Failed to sign in with Google. Please try again',
+          });
+        }
+      }
+    },
+    onError: () => {
+      setContinuingWithGoogle(false);
+      setErrors({ submit: 'Failed to sign in with Google. Please try again' });
+    },
+    onNonOAuthError: () => {
+      setContinuingWithGoogle(false);
+    },
+  });
+
+  function handleSignInWithGoogle() {
+    setContinuingWithGoogle(true);
+    googleLogin();
   }
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
+    setErrors({});
 
-    setServerError('Incorrect email or password');
+    try {
+      const result = signInSchema.safeParse(formData);
 
-    console.log('Email:', email);
-    console.log('Password:', password);
+      if (!result.success) {
+        const fieldErrors: FormErrors = {};
+        result.error.issues.forEach((issue) => {
+          if (issue.path[0]) {
+            fieldErrors[issue.path[0] as keyof FormErrors] = issue.message;
+          }
+        });
+        setErrors(fieldErrors);
+        return;
+      }
+
+      setLoading(true);
+
+      await signIn(formData);
+      navigate('/');
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        setErrors({ submit: 'Incorrect email or password' });
+      } else {
+        setErrors({ submit: 'Failed to sign in. Please try again' });
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -40,9 +128,9 @@ export default function SignInPage() {
           </p>
         </div>
 
-        {serverError && (
+        {errors.submit && (
           <div className="bg-error-background border border-error-border p-3 mb-4">
-            <p className="text-xs sm:text-sm text-error">{serverError}</p>
+            <p className="text-xs sm:text-sm text-error">{errors.submit}</p>
           </div>
         )}
 
@@ -60,16 +148,20 @@ export default function SignInPage() {
             </label>
             <Input
               id="email"
+              name="email"
               type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setServerError('');
-              }}
+              value={formData.email}
+              onChange={handleInputChange}
               placeholder="your@email.com"
               autoComplete="email"
               className="h-9 sm:h-10 text-sm"
+              disabled={loading || continuingWithGoogle}
             />
+            {errors.email && (
+              <p className="text-[11px] sm:text-xs text-error mt-1">
+                {errors.email}
+              </p>
+            )}
           </div>
 
           <div className="space-y-1.5">
@@ -89,24 +181,29 @@ export default function SignInPage() {
             </div>
             <Input
               id="password"
+              name="password"
               type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setServerError('');
-              }}
+              value={formData.password}
+              onChange={handleInputChange}
               placeholder="••••••••"
               autoComplete="current-password"
               className="h-9 sm:h-10 text-sm"
+              disabled={loading || continuingWithGoogle}
             />
+            {errors.password && (
+              <p className="text-[11px] sm:text-xs text-error mt-1">
+                {errors.password}
+              </p>
+            )}
           </div>
 
           <div className="pt-2 sm:pt-3 space-y-2.5 sm:space-y-3">
             <Button
               type="submit"
               className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium"
+              disabled={loading || continuingWithGoogle}
             >
-              Sign in
+              {loading && !continuingWithGoogle ? 'Signing in...' : 'Sign in'}
             </Button>
 
             <div className="flex items-center py-1 sm:py-1.5">
@@ -119,8 +216,9 @@ export default function SignInPage() {
 
             <Button
               type="button"
-              className="h-9 sm:h-10 flex items-center justify-center gap-2 border border-border bg-background text-foreground hover:bg-border/50 text-xs sm:text-sm font-medium"
+              className="w-full h-9 sm:h-10 flex items-center justify-center gap-2 border border-border bg-background text-foreground hover:bg-border/50 text-xs sm:text-sm font-medium"
               onClick={handleSignInWithGoogle}
+              disabled={loading || continuingWithGoogle}
             >
               <SiGoogle className="text-sm sm:text-base" />
               <span>Google</span>
