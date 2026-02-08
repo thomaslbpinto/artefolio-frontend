@@ -3,16 +3,15 @@ export interface User {
   name: string;
   username: string;
   email: string;
+  emailVerified: boolean;
+  isGoogleLinked: boolean;
   bio?: string;
   avatarUrl?: string;
-  googleId?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
   user: User;
 }
 
@@ -28,25 +27,14 @@ export interface SignUpData {
   password: string;
 }
 
-export interface GoogleSignInData {
-  code: string;
-}
-
-export interface GoogleSignUpInitiateData {
-  code: string;
-}
-
 export interface GoogleSignUpCompleteData {
-  googleId: string;
-  email: string;
-  avatarUrl?: string;
   name: string;
   username: string;
 }
 
 export interface GoogleProfile {
+  name: string;
   email: string;
-  name?: string;
   googleId: string;
   avatarUrl?: string;
 }

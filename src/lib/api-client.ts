@@ -3,94 +3,64 @@ import type {
   AuthResponse,
   SignInData,
   SignUpData,
-  GoogleSignInData,
-  GoogleSignUpInitiateData,
   GoogleSignUpCompleteData,
   GoogleProfile,
   User,
 } from '@/types/auth.types';
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 class ApiClient {
   private client: AxiosInstance;
   private isRefreshing = false;
-  private refreshSubscribers: Array<(token: string) => void> = [];
+  private refreshSubscribers: Array<() => void> = [];
 
   constructor() {
     this.client = axios.create({
-      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+      baseURL: API_BASE_URL,
       headers: {
         'Content-Type': 'application/json',
       },
+      withCredentials: true,
     });
 
-    // Request interceptor - add access token
-    this.client.interceptors.request.use((config) => {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
-
-    // Response interceptor - auto-refresh on 401
     this.client.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
-        const originalRequest = error.config as any;
+        const originalRequest = error.config as AxiosError['config'] & {
+          _retry?: boolean;
+        };
 
-        // Don't try to refresh on auth endpoints
-        const isAuthEndpoint = originalRequest.url?.includes('/auth/');
+        const isAuthEndpoint = originalRequest?.url?.includes('/auth/');
 
-        // If error is 401 and we haven't tried to refresh yet
         if (
           error.response?.status === 401 &&
-          !originalRequest._retry &&
+          !originalRequest?._retry &&
           !isAuthEndpoint
         ) {
           if (this.isRefreshing) {
-            // Wait for the refresh to complete
             return new Promise((resolve) => {
-              this.refreshSubscribers.push((token: string) => {
-                originalRequest.headers.Authorization = `Bearer ${token}`;
-                resolve(this.client(originalRequest));
+              this.refreshSubscribers.push(() => {
+                resolve(this.client(originalRequest!));
               });
             });
           }
 
-          originalRequest._retry = true;
+          if (originalRequest) {
+            originalRequest._retry = true;
+          }
+
           this.isRefreshing = true;
 
           try {
-            const refreshToken = localStorage.getItem('refreshToken');
-            if (!refreshToken) {
-              throw new Error('No refresh token');
-            }
-
-            const response = await this.client.post<AuthResponse>(
-              '/auth/refresh',
-              { refreshToken },
-            );
-
-            const { accessToken, refreshToken: newRefreshToken } =
-              response.data;
-
-            localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('refreshToken', newRefreshToken);
-
-            // Retry all queued requests with new token
-            this.refreshSubscribers.forEach((callback) =>
-              callback(accessToken),
-            );
+            await this.client.post<AuthResponse>('/auth/refresh');
+            this.refreshSubscribers.forEach((callback) => callback());
             this.refreshSubscribers = [];
-
-            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-            return this.client(originalRequest);
-          } catch (refreshError) {
-            // Refresh failed - clear tokens and redirect to login
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
+            return this.client(originalRequest!);
+          } catch {
             window.location.href = '/sign-in';
-            return Promise.reject(refreshError);
+            return Promise.reject(error);
           } finally {
             this.isRefreshing = false;
           }
@@ -99,6 +69,10 @@ class ApiClient {
         return Promise.reject(error);
       },
     );
+  }
+
+  getBaseUrl(): string {
+    return API_BASE_URL;
   }
 
   async signIn(data: SignInData): Promise<AuthResponse> {
@@ -117,20 +91,24 @@ class ApiClient {
     return response.data;
   }
 
-  async googleSignIn(data: GoogleSignInData): Promise<AuthResponse> {
-    const response = await this.client.post<AuthResponse>(
-      '/auth/google/sign-in',
-      data,
+  async getPendingSignup(): Promise<{ profile: GoogleProfile | null }> {
+    const response = await this.client.get<{ profile: GoogleProfile | null }>(
+      '/auth/google/pending-signup',
     );
     return response.data;
   }
 
-  async googleSignUpInitiate(
-    data: GoogleSignUpInitiateData,
-  ): Promise<GoogleProfile> {
-    const response = await this.client.post<GoogleProfile>(
-      '/auth/google/sign-up/initiate',
-      data,
+  async clearPendingSignup(): Promise<void> {
+    await this.client.get<{ ok: true }>('/auth/google/clear-pending-signup');
+  }
+
+  async clearPendingLink(): Promise<void> {
+    await this.client.get<{ ok: true }>('/auth/google/clear-pending-link');
+  }
+
+  async getPendingLink(): Promise<{ profile: GoogleProfile | null }> {
+    const response = await this.client.get<{ profile: GoogleProfile | null }>(
+      '/auth/google/pending-link',
     );
     return response.data;
   }
@@ -145,20 +123,36 @@ class ApiClient {
     return response.data;
   }
 
+  async linkGoogleAccount(): Promise<AuthResponse> {
+    const response = await this.client.post<AuthResponse>(
+      '/auth/google/link-account',
+    );
+    return response.data;
+  }
+
   async getMe(): Promise<User> {
     const response = await this.client.get<User>('/auth/me');
     return response.data;
   }
 
-  async refresh(refreshToken: string): Promise<AuthResponse> {
-    const response = await this.client.post<AuthResponse>('/auth/refresh', {
-      refreshToken,
-    });
+  async logout(): Promise<void> {
+    await this.client.post('/auth/logout');
+  }
+
+  async verifyEmail(token: string): Promise<{ message: string }> {
+    const response = await this.client.post<{ message: string }>(
+      '/auth/verify-email',
+      { token },
+    );
     return response.data;
   }
 
-  async logout(refreshToken: string): Promise<void> {
-    await this.client.post('/auth/logout', { refreshToken });
+  async resendVerificationEmail(email: string): Promise<{ message: string }> {
+    const response = await this.client.post<{ message: string }>(
+      '/auth/resend-verification-email',
+      { email },
+    );
+    return response.data;
   }
 }
 
