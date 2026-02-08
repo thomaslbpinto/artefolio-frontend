@@ -5,8 +5,8 @@ import { Input } from '@/components/ui/input';
 import { useState, type ChangeEvent, type SubmitEvent } from 'react';
 import { useAuth } from '@/contexts/auth.context';
 import { useNavigate } from 'react-router-dom';
-import { useGoogleLogin } from '@react-oauth/google';
 import { SiGoogle } from 'react-icons/si';
+import { apiClient } from '@/lib/api-client';
 import z from 'zod';
 
 const signInSchema = z.object({
@@ -33,8 +33,10 @@ export default function SignInPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
   const [continuingWithGoogle, setContinuingWithGoogle] = useState(false);
-  const { signIn, googleSignIn } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
+
+  const isDisabled = loading || continuingWithGoogle;
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,40 +44,9 @@ export default function SignInPage() {
     setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const googleLogin = useGoogleLogin({
-    flow: 'auth-code',
-    onSuccess: async (codeResponse) => {
-      setContinuingWithGoogle(false);
-      setErrors({});
-
-      try {
-        await googleSignIn({ code: codeResponse.code });
-        navigate('/');
-      } catch (error: any) {
-        if (error.response?.status === 401) {
-          setErrors({
-            submit:
-              'No account is linked to this Google account. Please sign up first',
-          });
-        } else {
-          setErrors({
-            submit: 'Failed to sign in with Google. Please try again',
-          });
-        }
-      }
-    },
-    onError: () => {
-      setContinuingWithGoogle(false);
-      setErrors({ submit: 'Failed to sign in with Google. Please try again' });
-    },
-    onNonOAuthError: () => {
-      setContinuingWithGoogle(false);
-    },
-  });
-
   function handleSignInWithGoogle() {
     setContinuingWithGoogle(true);
-    googleLogin();
+    window.location.href = `${apiClient.getBaseUrl()}/auth/google`;
   }
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
@@ -102,9 +73,9 @@ export default function SignInPage() {
       navigate('/');
     } catch (error: any) {
       if (error.response?.status === 401) {
-        setErrors({ submit: 'Incorrect email or password' });
+        setErrors({ submit: 'Incorrect email or password.' });
       } else {
-        setErrors({ submit: 'Failed to sign in. Please try again' });
+        setErrors({ submit: 'Failed to sign in. Please try again.' });
       }
     } finally {
       setLoading(false);
@@ -155,7 +126,7 @@ export default function SignInPage() {
               placeholder="your@email.com"
               autoComplete="email"
               className="h-9 sm:h-10 text-sm"
-              disabled={loading || continuingWithGoogle}
+              disabled={isDisabled}
             />
             {errors.email && (
               <p className="text-[11px] sm:text-xs text-error mt-1">
@@ -188,7 +159,7 @@ export default function SignInPage() {
               placeholder="••••••••"
               autoComplete="current-password"
               className="h-9 sm:h-10 text-sm"
-              disabled={loading || continuingWithGoogle}
+              disabled={isDisabled}
             />
             {errors.password && (
               <p className="text-[11px] sm:text-xs text-error mt-1">
@@ -201,7 +172,7 @@ export default function SignInPage() {
             <Button
               type="submit"
               className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium"
-              disabled={loading || continuingWithGoogle}
+              disabled={isDisabled}
             >
               {loading && !continuingWithGoogle ? 'Signing in...' : 'Sign in'}
             </Button>
@@ -209,7 +180,7 @@ export default function SignInPage() {
             <div className="flex items-center py-1 sm:py-1.5">
               <div className="grow border-t border-border"></div>
               <span className="shrink mx-3 text-[10px] sm:text-xs font-medium text-muted-foreground tracking-wider">
-                OR CONTINUE WITH
+                OR
               </span>
               <div className="grow border-t border-border"></div>
             </div>
@@ -218,10 +189,14 @@ export default function SignInPage() {
               type="button"
               className="w-full h-9 sm:h-10 flex items-center justify-center gap-2 border border-border bg-background text-foreground hover:bg-border/50 text-xs sm:text-sm font-medium"
               onClick={handleSignInWithGoogle}
-              disabled={loading || continuingWithGoogle}
+              disabled={isDisabled}
             >
               <SiGoogle className="text-sm sm:text-base" />
-              <span>Google</span>
+              <span>
+                {continuingWithGoogle
+                  ? 'Continuing with Google...'
+                  : 'Continue with Google'}
+              </span>
             </Button>
           </div>
         </form>

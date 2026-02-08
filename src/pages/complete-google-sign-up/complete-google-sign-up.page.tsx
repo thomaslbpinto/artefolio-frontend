@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { useState, useEffect, type ChangeEvent, type SubmitEvent } from 'react';
 import { z } from 'zod';
 import { useAuth } from '@/contexts/auth.context';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { apiClient } from '@/lib/api-client';
 import type { GoogleProfile } from '@/types/auth.types';
 
 const completeSignUpSchema = z.object({
@@ -36,7 +37,6 @@ type FormErrors = {
 };
 
 export default function CompleteGoogleSignUpPage() {
-  const location = useLocation();
   const navigate = useNavigate();
   const { googleSignUpComplete } = useAuth();
   const [profile, setProfile] = useState<GoogleProfile | null>(null);
@@ -46,6 +46,7 @@ export default function CompleteGoogleSignUpPage() {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
+  const [fetchingProfile, setFetchingProfile] = useState(true);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -54,17 +55,27 @@ export default function CompleteGoogleSignUpPage() {
   };
 
   useEffect(() => {
-    if (!location.state?.profile) {
-      navigate('/sign-up');
-      return;
-    }
+    const fetchProfile = async () => {
+      try {
+        const { profile: pendingProfile } = await apiClient.getPendingSignup();
+        if (!pendingProfile) {
+          navigate('/sign-up');
+          return;
+        }
+        setProfile(pendingProfile);
+        setFormData((prev) => ({
+          ...prev,
+          name: pendingProfile.name || '',
+        }));
+      } catch {
+        navigate('/sign-up');
+      } finally {
+        setFetchingProfile(false);
+      }
+    };
 
-    setProfile(location.state.profile);
-    setFormData((prev) => ({
-      ...prev,
-      name: location.state.profile.name || '',
-    }));
-  }, [location.state, navigate]);
+    fetchProfile();
+  }, [navigate]);
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -86,40 +97,46 @@ export default function CompleteGoogleSignUpPage() {
 
       setLoading(true);
 
-      if (!profile) {
-        setErrors({ submit: 'Profile data is missing. Please try again' });
-        return;
-      }
-
       await googleSignUpComplete({
-        googleId: profile.googleId,
-        email: profile.email,
-        avatarUrl: profile.avatarUrl,
         name: formData.name,
         username: formData.username,
       });
       navigate('/');
     } catch (error: any) {
+      const message = error.response?.data?.message as string | undefined;
+      if (
+        error.response?.status === 400 &&
+        (message === 'No pending signup found' ||
+          message === 'Invalid or expired pending signup')
+      ) {
+        navigate('/sign-up');
+        return;
+      }
       if (error.response?.status === 409) {
-        const message = error.response.data.message;
-        if (message.includes('username')) {
-          setErrors({ username: 'This username is already taken' });
+        if (message?.includes('username')) {
+          setErrors({ username: 'This username is already taken.' });
         } else {
-          setErrors({ submit: message });
+          setErrors({
+            submit: message ?? 'An account with this email already exists.',
+          });
         }
       } else {
-        setErrors({ submit: 'Failed to complete sign up. Please try again' });
+        setErrors({ submit: 'Failed to complete sign up. Please try again.' });
       }
     } finally {
       setLoading(false);
     }
   }
 
-  function handleGoBack() {
-    navigate('/sign-up');
+  async function handleGoBack() {
+    try {
+      await apiClient.clearPendingSignup();
+    } finally {
+      navigate('/sign-up');
+    }
   }
 
-  if (!profile) {
+  if (fetchingProfile || !profile) {
     return null;
   }
 
@@ -153,7 +170,7 @@ export default function CompleteGoogleSignUpPage() {
         >
           <div className="bg-border/30 border border-border p-3">
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Signing up with:{' '}
+              Signing up with{' '}
               <span className="font-medium text-foreground">
                 {profile.email}
               </span>

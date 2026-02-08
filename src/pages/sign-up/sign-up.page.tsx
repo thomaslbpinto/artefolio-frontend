@@ -6,7 +6,6 @@ import { useState, type ChangeEvent, type SubmitEvent } from 'react';
 import { z } from 'zod';
 import { useAuth } from '@/contexts/auth.context';
 import { useNavigate } from 'react-router-dom';
-import { useGoogleLogin } from '@react-oauth/google';
 import { SiGoogle } from 'react-icons/si';
 import { apiClient } from '@/lib/api-client';
 
@@ -62,53 +61,17 @@ export default function SignUpPage() {
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
+  const isDisabled = loading || continuingWithGoogle;
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const googleSignUp = useGoogleLogin({
-    flow: 'auth-code',
-    onSuccess: async (codeResponse) => {
-      setContinuingWithGoogle(false);
-      setErrors({});
-
-      try {
-        const profile = await apiClient.googleSignUpInitiate({
-          code: codeResponse.code,
-        });
-
-        navigate('/complete-google-sign-up', {
-          state: {
-            profile,
-          },
-        });
-      } catch (error: any) {
-        if (error.response?.status === 409) {
-          setErrors({
-            submit: error.response.data.message || 'Account already exists',
-          });
-        } else {
-          setErrors({
-            submit: 'Failed to sign up with Google. Please try again',
-          });
-        }
-      }
-    },
-    onError: () => {
-      setContinuingWithGoogle(false);
-      setErrors({ submit: 'Failed to sign up with Google. Please try again' });
-    },
-    onNonOAuthError: () => {
-      setContinuingWithGoogle(false);
-    },
-  });
-
-  async function handleSignUpWithGoogle() {
-    setErrors({});
+  function handleSignUpWithGoogle() {
     setContinuingWithGoogle(true);
-    googleSignUp();
+    window.location.href = `${apiClient.getBaseUrl()}/auth/google`;
   }
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
@@ -138,15 +101,20 @@ export default function SignUpPage() {
         const message = error.response.data.message;
         if (message.includes('email')) {
           setErrors({
-            email: 'This email is already linked to another account',
+            email: 'This email is already linked to another account.',
           });
         } else if (message.includes('username')) {
-          setErrors({ username: 'This username is already taken' });
+          setErrors({ username: 'This username is already taken.' });
         } else {
           setErrors({ submit: message });
         }
+      } else if (error.response?.status === 500) {
+        const message =
+          error.response.data?.message ??
+          'Failed to create account. Please try again.';
+        setErrors({ submit: message });
       } else {
-        setErrors({ submit: 'Failed to sign up. Please try again' });
+        setErrors({ submit: 'Failed to sign up. Please try again.' });
       }
     } finally {
       setLoading(false);
@@ -185,7 +153,7 @@ export default function SignUpPage() {
             type="button"
             className="w-full h-9 sm:h-10 flex items-center justify-center gap-2 border border-border bg-background text-foreground hover:bg-border/50 text-xs sm:text-sm font-medium"
             onClick={handleSignUpWithGoogle}
-            disabled={loading || continuingWithGoogle}
+            disabled={isDisabled}
           >
             <SiGoogle className="text-sm sm:text-base" />
             <span>
@@ -219,7 +187,7 @@ export default function SignUpPage() {
               placeholder="Your name"
               autoComplete="name"
               className="h-9 sm:h-10 text-sm"
-              disabled={loading || continuingWithGoogle}
+              disabled={isDisabled}
             />
             {errors.name && (
               <p className="text-[11px] sm:text-xs text-error mt-1">
@@ -244,7 +212,7 @@ export default function SignUpPage() {
               placeholder="username"
               autoComplete="username"
               className="h-9 sm:h-10 text-sm"
-              disabled={loading || continuingWithGoogle}
+              disabled={isDisabled}
             />
             {errors.username && (
               <p className="text-[11px] sm:text-xs text-error mt-1">
@@ -269,7 +237,7 @@ export default function SignUpPage() {
               placeholder="your@email.com"
               autoComplete="email"
               className="h-9 sm:h-10 text-sm"
-              disabled={loading || continuingWithGoogle}
+              disabled={isDisabled}
             />
             {errors.email && (
               <p className="text-[11px] sm:text-xs text-error mt-1">
@@ -294,7 +262,7 @@ export default function SignUpPage() {
               placeholder="••••••••"
               autoComplete="new-password"
               className="h-9 sm:h-10 text-sm"
-              disabled={loading || continuingWithGoogle}
+              disabled={isDisabled}
             />
             {errors.password && (
               <p className="text-[11px] sm:text-xs text-error mt-1">
@@ -307,9 +275,9 @@ export default function SignUpPage() {
             <Button
               type="submit"
               className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium"
-              disabled={loading || continuingWithGoogle}
+              disabled={isDisabled}
             >
-              {loading && !continuingWithGoogle ? 'Signing up...' : 'Sign up'}
+              {loading ? 'Signing up...' : 'Sign up'}
             </Button>
           </div>
         </form>
