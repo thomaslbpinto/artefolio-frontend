@@ -20,7 +20,7 @@ type AuthContextType = {
   signUp: (data: SignUpData) => Promise<void>;
   googleSignUpComplete: (data: GoogleSignUpCompleteData) => Promise<void>;
   linkGoogleAccount: () => Promise<void>;
-  logout: () => Promise<void>;
+  signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
 };
 
@@ -65,11 +65,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(response.user);
   };
 
-  const logout = async () => {
+  const signOut = async () => {
     try {
-      await apiClient.logout();
+      await apiClient.signOut();
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error('Sign out failed:', error);
     }
     setUser(null);
   };
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signUp,
         googleSignUpComplete,
         linkGoogleAccount,
-        logout,
+        signOut,
         refreshUser,
       }}
     >

@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/auth.context';
 import { apiClient } from '@/lib/api-client';
-import { useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 export default function EmailVerificationRequiredPage() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const [resending, setResending] = useState(false);
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
@@ -37,12 +37,16 @@ export default function EmailVerificationRequiredPage() {
     }
   }
 
-  async function handleLogout() {
+  async function handleSignOut() {
     try {
-      await logout();
+      await signOut();
     } finally {
       navigate('/');
     }
+  }
+
+  if (!user || user.emailVerified || user.isGoogleLinked) {
+    return <Navigate to="/" replace />;
   }
 
   return (
@@ -100,7 +104,7 @@ export default function EmailVerificationRequiredPage() {
 
           <Button
             type="button"
-            onClick={handleLogout}
+            onClick={handleSignOut}
             className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium border border-border bg-background text-foreground hover:bg-border/50"
           >
             Sign out

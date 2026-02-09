@@ -135,8 +135,8 @@ class ApiClient {
     return response.data;
   }
 
-  async logout(): Promise<void> {
-    await this.client.post('/auth/logout');
+  async signOut(): Promise<void> {
+    await this.client.post('/auth/sign-out');
   }
 
   async verifyEmail(token: string): Promise<{ message: string }> {
@@ -151,6 +151,25 @@ class ApiClient {
     const response = await this.client.post<{ message: string }>(
       '/auth/resend-verification-email',
       { email },
+    );
+    return response.data;
+  }
+
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const response = await this.client.post<{ message: string }>(
+      '/auth/forgot-password',
+      { email },
+    );
+    return response.data;
+  }
+
+  async resetPassword(
+    token: string,
+    password: string,
+  ): Promise<{ message: string }> {
+    const response = await this.client.post<{ message: string }>(
+      '/auth/reset-password',
+      { token, password },
     );
     return response.data;
   }

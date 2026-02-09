@@ -134,7 +134,7 @@ export default function SignUpPage() {
             Create your account
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-            Join artefolio and start sharing your art with the world
+            Join and start sharing your art with the world
           </p>
         </div>
 

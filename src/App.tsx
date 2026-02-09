@@ -11,6 +11,8 @@ import CompleteGoogleSignUpPage from './pages/complete-google-sign-up/complete-g
 import LinkGoogleAccountPage from './pages/link-google-account/link-google-account.page';
 import VerifyEmailPage from './pages/verify-email/verify-email.page';
 import EmailVerificationRequiredPage from './pages/email-verification-required/email-verification-required.page';
+import ForgotPasswordPage from './pages/forgot-password/forgot-password.page';
+import ResetPasswordPage from './pages/reset-password/reset-password.page';
 import HomePage from './pages/home/home.page';
 import NotFoundPage from './pages/not-found.page';
 
@@ -56,6 +58,22 @@ function App() {
             <Route
               path="/email-verification-required"
               element={<EmailVerificationRequiredPage />}
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <PublicRoute>
+                  <ForgotPasswordPage />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/reset-password"
+              element={
+                <PublicRoute>
+                  <ResetPasswordPage />
+                </PublicRoute>
+              }
             />
             <Route
               path="/"

@@ -26,7 +26,7 @@ export default function VerifyEmailPage() {
         await refreshUser();
         setTimeout(() => {
           navigate('/');
-        }, 2000);
+        }, 1500);
       } catch (error: any) {
         setStatus('error');
         const message =
@@ -36,21 +36,21 @@ export default function VerifyEmailPage() {
       }
     }
 
-    setTimeout(() => {
-      const token = searchParams.get('token');
+    const token = searchParams.get('token');
 
-      if (token) {
+    if (user?.emailVerified) {
+      navigate('/');
+    } else if (token) {
+      setTimeout(() => {
         if (!hasVerifiedTokenRef.current) {
           hasVerifiedTokenRef.current = true;
           verifyEmailWithToken(token);
         }
-      } else if (user?.emailVerified) {
-        navigate('/');
-      } else {
-        setStatus('error');
-        setMessage('No verification token provided.');
-      }
-    }, 3000);
+      }, 1500);
+    } else {
+      setStatus('error');
+      setMessage('No verification token provided.');
+    }
   }, [searchParams, user, navigate, refreshUser]);
 
   async function handleResendEmail() {
