@@ -10,13 +10,8 @@ import { apiClient } from '@/lib/api-client';
 import z from 'zod';
 
 const signInSchema = z.object({
-  email: z
-    .email('Please enter a valid email')
-    .max(255, 'Email must not exceed 255 characters'),
-  password: z
-    .string()
-    .min(1, 'Password is required')
-    .max(255, 'Password must not exceed 255 characters'),
+  email: z.email('Please enter a valid email').max(255, 'Email must not exceed 255 characters'),
+  password: z.string().min(1, 'Password is required').max(255, 'Password must not exceed 255 characters'),
 });
 
 type FormErrors = {
@@ -91,12 +86,8 @@ export default function SignInPage() {
 
       <main className="flex w-full max-w-md flex-col">
         <div className="mb-5 sm:mb-6">
-          <h1 className="text-lg sm:text-xl font-semibold text-foreground">
-            Welcome back
-          </h1>
-          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-            Sign in to your account to continue
-          </p>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Welcome back</h1>
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">Sign in to your account to continue</p>
         </div>
 
         {errors.submit && (
@@ -105,16 +96,9 @@ export default function SignInPage() {
           </div>
         )}
 
-        <form
-          className="space-y-3 sm:space-y-3.5"
-          onSubmit={handleSubmit}
-          noValidate
-        >
+        <form className="space-y-3 sm:space-y-3.5" onSubmit={handleSubmit} noValidate>
           <div className="space-y-1.5">
-            <label
-              className="text-xs sm:text-sm font-medium text-muted-foreground"
-              htmlFor="email"
-            >
+            <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="email">
               Email
             </label>
             <Input
@@ -128,19 +112,12 @@ export default function SignInPage() {
               className="h-9 sm:h-10 text-sm"
               disabled={isDisabled}
             />
-            {errors.email && (
-              <p className="text-[11px] sm:text-xs text-error mt-1">
-                {errors.email}
-              </p>
-            )}
+            {errors.email && <p className="text-[11px] sm:text-xs text-error mt-1">{errors.email}</p>}
           </div>
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between gap-2">
-              <label
-                className="text-xs sm:text-sm font-medium text-muted-foreground"
-                htmlFor="password"
-              >
+              <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="password">
                 Password
               </label>
               <a
@@ -161,19 +138,11 @@ export default function SignInPage() {
               className="h-9 sm:h-10 text-sm"
               disabled={isDisabled}
             />
-            {errors.password && (
-              <p className="text-[11px] sm:text-xs text-error mt-1">
-                {errors.password}
-              </p>
-            )}
+            {errors.password && <p className="text-[11px] sm:text-xs text-error mt-1">{errors.password}</p>}
           </div>
 
           <div className="pt-2 sm:pt-3 space-y-2.5 sm:space-y-3">
-            <Button
-              type="submit"
-              className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium"
-              disabled={isDisabled}
-            >
+            <Button type="submit" className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium" disabled={isDisabled}>
               {loading && !continuingWithGoogle ? 'Signing in...' : 'Sign in'}
             </Button>
 
@@ -192,11 +161,7 @@ export default function SignInPage() {
               disabled={isDisabled}
             >
               <SiGoogle className="text-sm sm:text-base" />
-              <span>
-                {continuingWithGoogle
-                  ? 'Continuing with Google...'
-                  : 'Continue with Google'}
-              </span>
+              <span>{continuingWithGoogle ? 'Continuing with Google...' : 'Continue with Google'}</span>
             </Button>
           </div>
         </form>
@@ -204,10 +169,7 @@ export default function SignInPage() {
         <div className="mt-5 sm:mt-6 text-center">
           <p className="text-xs sm:text-sm text-muted-foreground">
             New to artefolio?{' '}
-            <a
-              href="/sign-up"
-              className="font-medium text-primary hover:underline"
-            >
+            <a href="/sign-up" className="font-medium text-primary hover:underline">
               Create an account
             </a>
           </p>

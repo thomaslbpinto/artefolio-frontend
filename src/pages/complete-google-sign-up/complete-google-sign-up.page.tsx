@@ -10,10 +10,7 @@ import { apiClient } from '@/lib/api-client';
 import type { GoogleProfile } from '@/types/auth.types';
 
 const completeSignUpSchema = z.object({
-  name: z
-    .string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(100, 'Name must not exceed 100 characters'),
+  name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must not exceed 100 characters'),
   username: z
     .string()
     .min(2, 'Username must be at least 2 characters')
@@ -25,8 +22,7 @@ const completeSignUpSchema = z.object({
       message: 'Username cannot contain consecutive dots',
     })
     .regex(/^[a-zA-Z0-9._]+$/, {
-      message:
-        'Username can only contain letters, numbers, underscores, and dots',
+      message: 'Username can only contain letters, numbers, underscores, and dots',
     }),
 });
 
@@ -57,12 +53,15 @@ export default function CompleteGoogleSignUpPage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { profile: pendingProfile } = await apiClient.getPendingSignup();
+        const pendingProfile = await apiClient.getGooglePendingSignupProfile();
+
         if (!pendingProfile) {
           navigate('/sign-up');
           return;
         }
+
         setProfile(pendingProfile);
+
         setFormData((prev) => ({
           ...prev,
           name: pendingProfile.name || '',
@@ -101,13 +100,14 @@ export default function CompleteGoogleSignUpPage() {
         name: formData.name,
         username: formData.username,
       });
-      navigate('/');
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
     } catch (error: any) {
       const message = error.response?.data?.message as string | undefined;
       if (
         error.response?.status === 400 &&
-        (message === 'No pending signup found' ||
-          message === 'Invalid or expired pending signup')
+        (message === 'No pending signup found' || message === 'Invalid or expired pending signup')
       ) {
         navigate('/sign-up');
         return;
@@ -130,7 +130,7 @@ export default function CompleteGoogleSignUpPage() {
 
   async function handleGoBack() {
     try {
-      await apiClient.clearPendingSignup();
+      await apiClient.clearGooglePendingSignupProfile();
     } finally {
       navigate('/sign-up');
     }
@@ -149,12 +149,8 @@ export default function CompleteGoogleSignUpPage() {
 
       <main className="flex w-full max-w-md flex-col">
         <div className="mb-5 sm:mb-6">
-          <h1 className="text-lg sm:text-xl font-semibold text-foreground">
-            Complete your profile
-          </h1>
-          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-            Just a few more details to get started
-          </p>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Complete your profile</h1>
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">Just a few more details to get started</p>
         </div>
 
         {errors.submit && (
@@ -163,25 +159,15 @@ export default function CompleteGoogleSignUpPage() {
           </div>
         )}
 
-        <form
-          className="space-y-3 sm:space-y-3.5"
-          onSubmit={handleSubmit}
-          noValidate
-        >
+        <form className="space-y-3 sm:space-y-3.5" onSubmit={handleSubmit} noValidate>
           <div className="bg-border/30 border border-border p-3">
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Signing up with{' '}
-              <span className="font-medium text-foreground">
-                {profile.email}
-              </span>
+              Signing up with <span className="font-medium text-foreground">{profile.email}</span>
             </p>
           </div>
 
           <div className="space-y-1.5">
-            <label
-              className="text-xs sm:text-sm font-medium text-muted-foreground"
-              htmlFor="name"
-            >
+            <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="name">
               Name
             </label>
             <Input
@@ -195,18 +181,11 @@ export default function CompleteGoogleSignUpPage() {
               className="h-9 sm:h-10 text-sm"
               disabled={loading}
             />
-            {errors.name && (
-              <p className="text-[11px] sm:text-xs text-error mt-1">
-                {errors.name}
-              </p>
-            )}
+            {errors.name && <p className="text-[11px] sm:text-xs text-error mt-1">{errors.name}</p>}
           </div>
 
           <div className="space-y-1.5">
-            <label
-              className="text-xs sm:text-sm font-medium text-muted-foreground"
-              htmlFor="username"
-            >
+            <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="username">
               Username
             </label>
             <Input
@@ -220,19 +199,11 @@ export default function CompleteGoogleSignUpPage() {
               className="h-9 sm:h-10 text-sm"
               disabled={loading}
             />
-            {errors.username && (
-              <p className="text-[11px] sm:text-xs text-error mt-1">
-                {errors.username}
-              </p>
-            )}
+            {errors.username && <p className="text-[11px] sm:text-xs text-error mt-1">{errors.username}</p>}
           </div>
 
           <div className="pt-1.5 sm:pt-2 space-y-2.5">
-            <Button
-              type="submit"
-              className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium" disabled={loading}>
               {loading ? 'Signing up...' : 'Sign up'}
             </Button>
 

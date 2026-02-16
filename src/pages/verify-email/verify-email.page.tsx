@@ -10,9 +10,7 @@ export default function VerifyEmailPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, refreshUser } = useAuth();
-  const [status, setStatus] = useState<'verifying' | 'success' | 'error'>(
-    'verifying',
-  );
+  const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
   const [message, setMessage] = useState('Verifying your email...');
   const [resending, setResending] = useState(false);
   const hasVerifiedTokenRef = useRef(false);
@@ -24,14 +22,10 @@ export default function VerifyEmailPage() {
         setStatus('success');
         setMessage('Email verified successfully!');
         await refreshUser();
-        setTimeout(() => {
-          navigate('/');
-        }, 1500);
+        navigate('/');
       } catch (error: any) {
         setStatus('error');
-        const message =
-          error.response?.data?.message ||
-          'Failed to verify email. Please try again.';
+        const message = error.response?.data?.message || 'Failed to verify email. Please try again.';
         setMessage(message);
       }
     }
@@ -68,9 +62,7 @@ export default function VerifyEmailPage() {
       setMessage('Verification email sent! Please check your inbox.');
     } catch (error: any) {
       setStatus('error');
-      const message =
-        error.response?.data?.message ||
-        'Failed to resend email. Please try again.';
+      const message = error.response?.data?.message || 'Failed to resend email. Please try again.';
       setMessage(message);
     } finally {
       setResending(false);
@@ -90,9 +82,7 @@ export default function VerifyEmailPage() {
 
       <main className="flex w-full max-w-md flex-col">
         <div className="mb-5 sm:mb-6">
-          <h1 className="text-lg sm:text-xl font-semibold text-foreground">
-            Verify your email address
-          </h1>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Verify your email address</h1>
         </div>
 
         <div
@@ -107,11 +97,7 @@ export default function VerifyEmailPage() {
           <div className="flex items-center gap-2">
             <p
               className={`text-xs sm:text-sm ${
-                status === 'error'
-                  ? 'text-error'
-                  : status === 'success'
-                    ? 'text-success'
-                    : 'text-muted-foreground'
+                status === 'error' ? 'text-error' : status === 'success' ? 'text-success' : 'text-muted-foreground'
               }`}
             >
               {message}
@@ -137,9 +123,7 @@ export default function VerifyEmailPage() {
             className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium border border-border bg-background text-foreground hover:bg-border/50"
             disabled={resending || (status === 'success' && !resending)}
           >
-            {!resending && status === 'success'
-              ? 'Redirecting to home...'
-              : 'Go to home'}
+            {!resending && status === 'success' ? 'Redirecting to home...' : 'Go to home'}
           </Button>
         </div>
       </main>

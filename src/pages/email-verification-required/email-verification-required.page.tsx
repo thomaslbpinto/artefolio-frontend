@@ -27,9 +27,7 @@ export default function EmailVerificationRequiredPage() {
       setMessage('Verification email sent! Please check your inbox.');
       setIsError(false);
     } catch (error: any) {
-      const message =
-        error.response?.data?.message ||
-        'Failed to resend email. Please try again.';
+      const message = error.response?.data?.message || 'Failed to resend email. Please try again.';
       setMessage(message);
       setIsError(true);
     } finally {
@@ -58,31 +56,22 @@ export default function EmailVerificationRequiredPage() {
 
       <main className="flex w-full max-w-md flex-col">
         <div className="mb-5 sm:mb-6">
-          <h1 className="text-lg sm:text-xl font-semibold text-foreground">
-            Verify your email address
-          </h1>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Verify your email address</h1>
         </div>
 
         {message && (
           <div
             className={`border p-3 mb-4 ${
-              isError
-                ? 'bg-error-background border-error-border'
-                : 'bg-success-background border-success-border'
+              isError ? 'bg-error-background border-error-border' : 'bg-success-background border-success-border'
             }`}
           >
-            <p
-              className={`text-xs sm:text-sm ${isError ? 'text-error' : 'text-success'}`}
-            >
-              {message}
-            </p>
+            <p className={`text-xs sm:text-sm ${isError ? 'text-error' : 'text-success'}`}>{message}</p>
           </div>
         )}
 
         <div className="bg-border/30 border border-border p-4 mb-6">
           <p className="text-xs sm:text-sm text-muted-foreground mb-2">
-            We sent a verification email to{' '}
-            <span className="font-medium text-foreground">{user?.email}</span>.
+            We sent a verification email to <span className="font-medium text-foreground">{user?.email}</span>.
           </p>
           <p className="text-xs sm:text-sm text-muted-foreground mb-2">
             Click the link in the email to verify your account.

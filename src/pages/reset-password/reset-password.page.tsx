@@ -64,8 +64,7 @@ export default function ResetPasswordPage() {
     } catch (error) {
       const message =
         error instanceof AxiosError
-          ? error.response?.data?.message ||
-            'Failed to reset password. Please try again.'
+          ? error.response?.data?.message || 'Failed to reset password. Please try again.'
           : 'Failed to reset password. Please try again.';
       setErrors({ submit: message });
     } finally {
@@ -83,15 +82,12 @@ export default function ResetPasswordPage() {
 
         <main className="flex w-full max-w-md flex-col">
           <div className="mb-5 sm:mb-6">
-            <h1 className="text-lg sm:text-xl font-semibold text-foreground">
-              Invalid reset link
-            </h1>
+            <h1 className="text-lg sm:text-xl font-semibold text-foreground">Invalid reset link</h1>
           </div>
 
           <div className="border border-error-border bg-error-background p-3 mb-6">
             <p className="text-xs sm:text-sm text-error">
-              This password reset link is invalid or missing. Please request a
-              new one.
+              This password reset link is invalid or missing. Please request a new one.
             </p>
           </div>
 
@@ -116,12 +112,8 @@ export default function ResetPasswordPage() {
 
       <main className="flex w-full max-w-md flex-col">
         <div className="mb-5 sm:mb-6">
-          <h1 className="text-lg sm:text-xl font-semibold text-foreground">
-            Reset your password
-          </h1>
-          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-            Enter your new password below.
-          </p>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Reset your password</h1>
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">Enter your new password below.</p>
         </div>
 
         {errors.submit && (
@@ -130,16 +122,9 @@ export default function ResetPasswordPage() {
           </div>
         )}
 
-        <form
-          className="space-y-3 sm:space-y-3.5"
-          onSubmit={handleSubmit}
-          noValidate
-        >
+        <form className="space-y-3 sm:space-y-3.5" onSubmit={handleSubmit} noValidate>
           <div className="space-y-1.5">
-            <label
-              htmlFor="password"
-              className="text-xs sm:text-sm font-medium text-muted-foreground"
-            >
+            <label htmlFor="password" className="text-xs sm:text-sm font-medium text-muted-foreground">
               New password
             </label>
             <Input
@@ -154,19 +139,11 @@ export default function ResetPasswordPage() {
               disabled={submitting}
               className="h-9 sm:h-10 text-sm"
             />
-            {errors.password && (
-              <p className="text-[11px] sm:text-xs text-error mt-1">
-                {errors.password}
-              </p>
-            )}
+            {errors.password && <p className="text-[11px] sm:text-xs text-error mt-1">{errors.password}</p>}
           </div>
 
           <div className="pt-2 sm:pt-3 space-y-2.5">
-            <Button
-              type="submit"
-              disabled={submitting}
-              className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium"
-            >
+            <Button type="submit" disabled={submitting} className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium">
               {submitting ? 'Resetting...' : 'Reset password'}
             </Button>
           </div>

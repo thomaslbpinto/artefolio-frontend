@@ -55,10 +55,7 @@ function App() {
               }
             />
             <Route path="/verify-email" element={<VerifyEmailPage />} />
-            <Route
-              path="/email-verification-required"
-              element={<EmailVerificationRequiredPage />}
-            />
+            <Route path="/email-verification-required" element={<EmailVerificationRequiredPage />} />
             <Route
               path="/forgot-password"
               element={

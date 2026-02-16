@@ -5,11 +5,7 @@ export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <button
-      className="cursor-pointer"
-      onClick={toggleTheme}
-      aria-label="Toggle theme"
-    >
+    <button className="cursor-pointer" onClick={toggleTheme} aria-label="Toggle theme">
       {theme === 'light' ? <FiMoon size={24} /> : <FiSun size={24} />}
     </button>
   );

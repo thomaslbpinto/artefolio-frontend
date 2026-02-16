@@ -10,10 +10,7 @@ import { SiGoogle } from 'react-icons/si';
 import { apiClient } from '@/lib/api-client';
 
 const signUpSchema = z.object({
-  name: z
-    .string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(100, 'Name must not exceed 100 characters'),
+  name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must not exceed 100 characters'),
   username: z
     .string()
     .min(2, 'Username must be at least 2 characters')
@@ -25,12 +22,9 @@ const signUpSchema = z.object({
       message: 'Username cannot contain consecutive dots',
     })
     .regex(/^[a-zA-Z0-9._]+$/, {
-      message:
-        'Username can only contain letters, numbers, underscores, and dots',
+      message: 'Username can only contain letters, numbers, underscores, and dots',
     }),
-  email: z
-    .email('Please enter a valid email')
-    .max(255, 'Email must not exceed 255 characters'),
+  email: z.email('Please enter a valid email').max(255, 'Email must not exceed 255 characters'),
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters')
@@ -109,9 +103,7 @@ export default function SignUpPage() {
           setErrors({ submit: message });
         }
       } else if (error.response?.status === 500) {
-        const message =
-          error.response.data?.message ??
-          'Failed to create account. Please try again.';
+        const message = error.response.data?.message ?? 'Failed to create account. Please try again.';
         setErrors({ submit: message });
       } else {
         setErrors({ submit: 'Failed to sign up. Please try again.' });
@@ -130,9 +122,7 @@ export default function SignUpPage() {
 
       <main className="flex w-full max-w-md flex-col">
         <div className="mb-5 sm:mb-6">
-          <h1 className="text-lg sm:text-xl font-semibold text-foreground">
-            Create your account
-          </h1>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Create your account</h1>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
             Join and start sharing your art with the world
           </p>
@@ -144,11 +134,7 @@ export default function SignUpPage() {
           </div>
         )}
 
-        <form
-          className="space-y-3 sm:space-y-3.5"
-          onSubmit={handleSubmit}
-          noValidate
-        >
+        <form className="space-y-3 sm:space-y-3.5" onSubmit={handleSubmit} noValidate>
           <Button
             type="button"
             className="w-full h-9 sm:h-10 flex items-center justify-center gap-2 border border-border bg-background text-foreground hover:bg-border/50 text-xs sm:text-sm font-medium"
@@ -156,11 +142,7 @@ export default function SignUpPage() {
             disabled={isDisabled}
           >
             <SiGoogle className="text-sm sm:text-base" />
-            <span>
-              {continuingWithGoogle
-                ? 'Continuing with Google...'
-                : 'Continue with Google'}
-            </span>
+            <span>{continuingWithGoogle ? 'Continuing with Google...' : 'Continue with Google'}</span>
           </Button>
 
           <div className="flex items-center py-1 sm:py-1.5">
@@ -172,10 +154,7 @@ export default function SignUpPage() {
           </div>
 
           <div className="space-y-1.5">
-            <label
-              className="text-xs sm:text-sm font-medium text-muted-foreground"
-              htmlFor="name"
-            >
+            <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="name">
               Name
             </label>
             <Input
@@ -189,18 +168,11 @@ export default function SignUpPage() {
               className="h-9 sm:h-10 text-sm"
               disabled={isDisabled}
             />
-            {errors.name && (
-              <p className="text-[11px] sm:text-xs text-error mt-1">
-                {errors.name}
-              </p>
-            )}
+            {errors.name && <p className="text-[11px] sm:text-xs text-error mt-1">{errors.name}</p>}
           </div>
 
           <div className="space-y-1.5">
-            <label
-              className="text-xs sm:text-sm font-medium text-muted-foreground"
-              htmlFor="username"
-            >
+            <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="username">
               Username
             </label>
             <Input
@@ -214,18 +186,11 @@ export default function SignUpPage() {
               className="h-9 sm:h-10 text-sm"
               disabled={isDisabled}
             />
-            {errors.username && (
-              <p className="text-[11px] sm:text-xs text-error mt-1">
-                {errors.username}
-              </p>
-            )}
+            {errors.username && <p className="text-[11px] sm:text-xs text-error mt-1">{errors.username}</p>}
           </div>
 
           <div className="space-y-1.5">
-            <label
-              className="text-xs sm:text-sm font-medium text-muted-foreground"
-              htmlFor="email"
-            >
+            <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="email">
               Email
             </label>
             <Input
@@ -239,18 +204,11 @@ export default function SignUpPage() {
               className="h-9 sm:h-10 text-sm"
               disabled={isDisabled}
             />
-            {errors.email && (
-              <p className="text-[11px] sm:text-xs text-error mt-1">
-                {errors.email}
-              </p>
-            )}
+            {errors.email && <p className="text-[11px] sm:text-xs text-error mt-1">{errors.email}</p>}
           </div>
 
           <div className="space-y-1.5">
-            <label
-              className="text-xs sm:text-sm font-medium text-muted-foreground"
-              htmlFor="password"
-            >
+            <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="password">
               Password
             </label>
             <Input
@@ -264,19 +222,11 @@ export default function SignUpPage() {
               className="h-9 sm:h-10 text-sm"
               disabled={isDisabled}
             />
-            {errors.password && (
-              <p className="text-[11px] sm:text-xs text-error mt-1">
-                {errors.password}
-              </p>
-            )}
+            {errors.password && <p className="text-[11px] sm:text-xs text-error mt-1">{errors.password}</p>}
           </div>
 
           <div className="pt-1.5 sm:pt-2">
-            <Button
-              type="submit"
-              className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium"
-              disabled={isDisabled}
-            >
+            <Button type="submit" className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium" disabled={isDisabled}>
               {loading ? 'Signing up...' : 'Sign up'}
             </Button>
           </div>
@@ -285,10 +235,7 @@ export default function SignUpPage() {
         <div className="mt-5 sm:mt-6 text-center">
           <p className="text-xs sm:text-sm text-muted-foreground">
             Already have an account?{' '}
-            <a
-              href="/sign-in"
-              className="font-medium text-primary hover:underline"
-            >
+            <a href="/sign-in" className="font-medium text-primary hover:underline">
               Sign in
             </a>
           </p>

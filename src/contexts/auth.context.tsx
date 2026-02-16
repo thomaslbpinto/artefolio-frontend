@@ -1,27 +1,16 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { apiClient } from '@/lib/api-client';
-import type {
-  User,
-  SignInData,
-  SignUpData,
-  GoogleSignUpCompleteData,
-} from '@/types/auth.types';
+import type { User, SignInData, SignUpData, GoogleSignUpCompleteData } from '@/types/auth.types';
 
 type AuthContextType = {
   user: User | null;
   loading: boolean;
   signIn: (data: SignInData) => Promise<void>;
   signUp: (data: SignUpData) => Promise<void>;
-  googleSignUpComplete: (data: GoogleSignUpCompleteData) => Promise<void>;
-  linkGoogleAccount: () => Promise<void>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  googleSignUpComplete: (data: GoogleSignUpCompleteData) => Promise<void>;
+  googleLinkAccount: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -55,16 +44,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(response.user);
   };
 
-  const googleSignUpComplete = async (data: GoogleSignUpCompleteData) => {
-    const response = await apiClient.googleSignUpComplete(data);
-    setUser(response.user);
-  };
-
-  const linkGoogleAccount = async () => {
-    const response = await apiClient.linkGoogleAccount();
-    setUser(response.user);
-  };
-
   const signOut = async () => {
     try {
       await apiClient.signOut();
@@ -83,6 +62,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const googleSignUpComplete = async (data: GoogleSignUpCompleteData) => {
+    const response = await apiClient.googleSignUpComplete(data);
+    setUser(response.user);
+  };
+
+  const googleLinkAccount = async () => {
+    const response = await apiClient.googleLinkAccount();
+    setUser(response.user);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -90,10 +79,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         loading,
         signIn,
         signUp,
-        googleSignUpComplete,
-        linkGoogleAccount,
         signOut,
         refreshUser,
+        googleSignUpComplete,
+        googleLinkAccount,
       }}
     >
       {children}
@@ -101,5 +90,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);

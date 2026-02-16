@@ -8,8 +8,7 @@ import type {
   User,
 } from '@/types/auth.types';
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -34,11 +33,7 @@ class ApiClient {
 
         const isAuthEndpoint = originalRequest?.url?.includes('/auth/');
 
-        if (
-          error.response?.status === 401 &&
-          !originalRequest?._retry &&
-          !isAuthEndpoint
-        ) {
+        if (error.response?.status === 401 && !originalRequest?._retry && !isAuthEndpoint) {
           if (this.isRefreshing) {
             return new Promise((resolve) => {
               this.refreshSubscribers.push(() => {
@@ -54,7 +49,7 @@ class ApiClient {
           this.isRefreshing = true;
 
           try {
-            await this.client.post<AuthResponse>('/auth/refresh');
+            await this.client.post<AuthResponse>('/auth/refresh-access-token');
             this.refreshSubscribers.forEach((callback) => callback());
             this.refreshSubscribers = [];
             return this.client(originalRequest!);
@@ -76,57 +71,44 @@ class ApiClient {
   }
 
   async signIn(data: SignInData): Promise<AuthResponse> {
-    const response = await this.client.post<AuthResponse>(
-      '/auth/sign-in',
-      data,
-    );
+    const response = await this.client.post<AuthResponse>('/auth/sign-in', data);
     return response.data;
   }
 
   async signUp(data: SignUpData): Promise<AuthResponse> {
-    const response = await this.client.post<AuthResponse>(
-      '/auth/sign-up',
-      data,
-    );
+    const response = await this.client.post<AuthResponse>('/auth/sign-up', data);
     return response.data;
   }
 
-  async getPendingSignup(): Promise<{ profile: GoogleProfile | null }> {
-    const response = await this.client.get<{ profile: GoogleProfile | null }>(
-      '/auth/google/pending-signup',
-    );
+  async signOut(): Promise<void> {
+    await this.client.post('/auth/sign-out');
+  }
+
+  async getGooglePendingSignupProfile(): Promise<GoogleProfile | null> {
+    const response = await this.client.get<GoogleProfile | null>('/auth/google/pending-signup');
     return response.data;
   }
 
-  async clearPendingSignup(): Promise<void> {
-    await this.client.get<{ ok: true }>('/auth/google/clear-pending-signup');
+  async clearGooglePendingSignupProfile(): Promise<void> {
+    await this.client.get<void>('/auth/google/clear-pending-signup');
   }
 
-  async clearPendingLink(): Promise<void> {
-    await this.client.get<{ ok: true }>('/auth/google/clear-pending-link');
-  }
-
-  async getPendingLink(): Promise<{ profile: GoogleProfile | null }> {
-    const response = await this.client.get<{ profile: GoogleProfile | null }>(
-      '/auth/google/pending-link',
-    );
+  async getPendingGoogleLinkProfile(): Promise<GoogleProfile | null> {
+    const response = await this.client.get<GoogleProfile | null>('/auth/google/pending-link');
     return response.data;
   }
 
-  async googleSignUpComplete(
-    data: GoogleSignUpCompleteData,
-  ): Promise<AuthResponse> {
-    const response = await this.client.post<AuthResponse>(
-      '/auth/google/sign-up/complete',
-      data,
-    );
+  async clearGooglePendingLinkProfile(): Promise<void> {
+    await this.client.get<void>('/auth/google/clear-pending-link');
+  }
+
+  async googleSignUpComplete(data: GoogleSignUpCompleteData): Promise<AuthResponse> {
+    const response = await this.client.post<AuthResponse>('/auth/google/sign-up/complete', data);
     return response.data;
   }
 
-  async linkGoogleAccount(): Promise<AuthResponse> {
-    const response = await this.client.post<AuthResponse>(
-      '/auth/google/link-account',
-    );
+  async googleLinkAccount(): Promise<AuthResponse> {
+    const response = await this.client.post<AuthResponse>('/auth/google/link-account');
     return response.data;
   }
 
@@ -135,42 +117,23 @@ class ApiClient {
     return response.data;
   }
 
-  async signOut(): Promise<void> {
-    await this.client.post('/auth/sign-out');
-  }
-
-  async verifyEmail(token: string): Promise<{ message: string }> {
-    const response = await this.client.post<{ message: string }>(
-      '/auth/verify-email',
-      { token },
-    );
+  async verifyEmail(token: string): Promise<void> {
+    const response = await this.client.post<void>('/auth/verify-email', { token });
     return response.data;
   }
 
-  async resendVerificationEmail(email: string): Promise<{ message: string }> {
-    const response = await this.client.post<{ message: string }>(
-      '/auth/resend-verification-email',
-      { email },
-    );
+  async resendVerificationEmail(email: string): Promise<void> {
+    const response = await this.client.post<void>('/auth/resend-verification-email', { email });
     return response.data;
   }
 
-  async forgotPassword(email: string): Promise<{ message: string }> {
-    const response = await this.client.post<{ message: string }>(
-      '/auth/forgot-password',
-      { email },
-    );
+  async forgotPassword(email: string): Promise<void> {
+    const response = await this.client.post<void>('/auth/forgot-password', { email });
     return response.data;
   }
 
-  async resetPassword(
-    token: string,
-    password: string,
-  ): Promise<{ message: string }> {
-    const response = await this.client.post<{ message: string }>(
-      '/auth/reset-password',
-      { token, password },
-    );
+  async resetPassword(token: string, password: string): Promise<void> {
+    const response = await this.client.post<void>('/auth/reset-password', { token, password });
     return response.data;
   }
 }

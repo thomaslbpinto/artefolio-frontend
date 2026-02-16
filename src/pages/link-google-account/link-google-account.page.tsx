@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/auth.context';
 
 export default function LinkGoogleAccountPage() {
   const navigate = useNavigate();
-  const { linkGoogleAccount } = useAuth();
+  const { googleLinkAccount } = useAuth();
   const [profile, setProfile] = useState<{ email: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetchingProfile, setFetchingProfile] = useState(true);
@@ -16,11 +16,13 @@ export default function LinkGoogleAccountPage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { profile: pendingProfile } = await apiClient.getPendingLink();
+        const pendingProfile = await apiClient.getPendingGoogleLinkProfile();
+
         if (!pendingProfile) {
           navigate('/sign-up');
           return;
         }
+
         setProfile({ email: pendingProfile.email });
       } catch {
         navigate('/');
@@ -36,7 +38,7 @@ export default function LinkGoogleAccountPage() {
     setLoading(true);
 
     try {
-      await linkGoogleAccount();
+      await googleLinkAccount();
       navigate('/');
     } catch {
       setLoading(false);
@@ -45,7 +47,7 @@ export default function LinkGoogleAccountPage() {
 
   async function handleCancel() {
     try {
-      await apiClient.clearPendingLink();
+      await apiClient.clearGooglePendingLinkProfile();
     } finally {
       navigate('/');
     }
@@ -64,16 +66,12 @@ export default function LinkGoogleAccountPage() {
 
       <main className="flex w-full max-w-md flex-col">
         <div className="mb-5 sm:mb-6">
-          <h1 className="text-lg sm:text-xl font-semibold text-foreground">
-            Link your Google account
-          </h1>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Link your Google account</h1>
         </div>
 
         <div className="bg-border/30 border border-border p-3 mb-6">
           <p className="text-xs sm:text-sm text-muted-foreground mb-2">
-            You have an account with{' '}
-            <span className="font-medium text-foreground">{profile.email}</span>
-            .
+            You have an account with <span className="font-medium text-foreground">{profile.email}</span>.
           </p>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
             Link your account to sign in with Google in the future.
