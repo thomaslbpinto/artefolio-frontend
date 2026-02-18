@@ -13,10 +13,6 @@
   --error: #dc2626;
   --error-background: #fef2f2;
   --error-border: #fecaca;
-
-  --success: #16a34a;
-  --success-background: #d1fae5;
-  --success-border: #a7f3d0;
 }
 
 .dark {
@@ -29,10 +25,6 @@
   --error: #f87171;
   --error-background: #1a0f0f;
   --error-border: #3f1f1f;
-
-  --success: #34d399;
-  --success-background: #0f1a16;
-  --success-border: #1f3f34;
 }
 
 @theme {
@@ -48,10 +40,6 @@
   --color-error: var(--error);
   --color-error-background: var(--error-background);
   --color-error-border: var(--error-border);
-
-  --color-success: var(--success);
-  --color-success-background: var(--success-background);
-  --color-success-border: var(--success-border);
 }
 
 body {

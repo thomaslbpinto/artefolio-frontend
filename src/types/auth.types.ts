@@ -38,3 +38,11 @@ export interface GoogleProfile {
   googleId: string;
   avatarUrl?: string;
 }
+
+export interface ResendCooldownEmail {
+  retryAfterSeconds: number;
+}
+
+export interface ResendCooldownPasswordReset {
+  retryAfterSeconds: number;
+}

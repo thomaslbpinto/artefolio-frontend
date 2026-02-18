@@ -6,6 +6,8 @@ import type {
   GoogleSignUpCompleteData,
   GoogleProfile,
   User,
+  ResendCooldownEmail,
+  ResendCooldownPasswordReset,
 } from '@/types/auth.types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
@@ -117,23 +119,40 @@ class ApiClient {
     return response.data;
   }
 
-  async verifyEmail(token: string): Promise<void> {
-    const response = await this.client.post<void>('/auth/verify-email', { token });
+  async verifyEmailVerificationCode(code: string): Promise<void> {
+    const response = await this.client.post<void>('/auth/email/verify-verification-code', { code });
     return response.data;
   }
 
-  async resendVerificationEmail(email: string): Promise<void> {
-    const response = await this.client.post<void>('/auth/resend-verification-email', { email });
+  async getEmailVerificationResendCooldown(): Promise<ResendCooldownEmail> {
+    const response = await this.client.get<ResendCooldownEmail>('/auth/email/resend-cooldown');
     return response.data;
   }
 
-  async forgotPassword(email: string): Promise<void> {
-    const response = await this.client.post<void>('/auth/forgot-password', { email });
+  async resendEmailVerificationEmail(email: string): Promise<void> {
+    const response = await this.client.post<void>('/auth/email/resend-verification-email', { email });
     return response.data;
   }
 
-  async resetPassword(token: string, password: string): Promise<void> {
-    const response = await this.client.post<void>('/auth/reset-password', { token, password });
+  async resetPassword(email: string, code: string, newPassword: string): Promise<void> {
+    const response = await this.client.post<void>('/auth/password/reset', { email, code, newPassword });
+    return response.data;
+  }
+
+  async verifyPasswordResetCode(email: string, code: string): Promise<void> {
+    const response = await this.client.post<void>('/auth/password/verify-reset-code', { email, code });
+    return response.data;
+  }
+
+  async sendPasswordResetEmail(email: string): Promise<void> {
+    const response = await this.client.post<void>('/auth/password/send-reset-email', { email });
+    return response.data;
+  }
+
+  async getPasswordResetResendCooldown(email: string): Promise<ResendCooldownPasswordReset> {
+    const response = await this.client.get<ResendCooldownPasswordReset>('/auth/password/resend-cooldown', {
+      params: { email },
+    });
     return response.data;
   }
 }

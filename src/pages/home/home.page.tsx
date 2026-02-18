@@ -6,6 +6,7 @@ export default function HomePage() {
   return (
     <>
       <h1>Home</h1>
+      <p>artefolio being built...</p>
       <button onClick={signOut}>Sign out</button>
     </>
   );

@@ -18,7 +18,7 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   }
 
   if (!user.emailVerified && !user.isGoogleLinked) {
-    return <Navigate to="/email-verification-required" />;
+    return <Navigate to="/verify-email" />;
   }
 
   return children;

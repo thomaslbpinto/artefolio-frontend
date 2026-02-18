@@ -2,6 +2,7 @@ import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme.toggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { useState, type ChangeEvent, type SubmitEvent } from 'react';
 import { useAuth } from '@/contexts/auth.context';
 import { useNavigate } from 'react-router-dom';
@@ -121,16 +122,15 @@ export default function SignInPage() {
                 Password
               </label>
               <a
-                href="/forgot-password"
+                href="/reset-password"
                 className="text-xs sm:text-sm font-medium text-primary hover:underline whitespace-nowrap"
               >
                 Forgot password?
               </a>
             </div>
-            <Input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               value={formData.password}
               onChange={handleInputChange}
               placeholder="••••••••"

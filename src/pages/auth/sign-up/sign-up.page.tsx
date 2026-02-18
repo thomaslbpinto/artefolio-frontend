@@ -2,6 +2,7 @@ import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme.toggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { useState, type ChangeEvent, type SubmitEvent } from 'react';
 import { z } from 'zod';
 import { useAuth } from '@/contexts/auth.context';
@@ -211,10 +212,9 @@ export default function SignUpPage() {
             <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="password">
               Password
             </label>
-            <Input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               value={formData.password}
               onChange={handleInputChange}
               placeholder="••••••••"
