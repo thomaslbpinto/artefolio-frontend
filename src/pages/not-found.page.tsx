@@ -1,9 +1,10 @@
-import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 export default function NotFoundPage() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.error('404 Error: User attempted to access non-existent route:', location.pathname);
@@ -21,9 +22,7 @@ export default function NotFoundPage() {
         </div>
 
         <div className="w-full space-y-2.5 sm:space-y-3">
-          <Button className="h-9 sm:h-10 text-xs sm:text-sm font-medium" onClick={() => (window.location.href = '/')}>
-            Return to home
-          </Button>
+          <Button onClick={() => navigate('/')}>Return to home</Button>
         </div>
       </main>
     </div>

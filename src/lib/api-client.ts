@@ -6,8 +6,7 @@ import type {
   GoogleSignUpCompleteData,
   GoogleProfile,
   User,
-  ResendCooldownEmail,
-  ResendCooldownPasswordReset,
+  ResendCooldownResponse,
 } from '@/types/auth.types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
@@ -72,6 +71,10 @@ class ApiClient {
     return API_BASE_URL;
   }
 
+  getGoogleAuthUrl(): string {
+    return `${API_BASE_URL}/auth/google`;
+  }
+
   async signIn(data: SignInData): Promise<AuthResponse> {
     const response = await this.client.post<AuthResponse>('/auth/sign-in', data);
     return response.data;
@@ -92,7 +95,7 @@ class ApiClient {
   }
 
   async clearGooglePendingSignupProfile(): Promise<void> {
-    await this.client.get<void>('/auth/google/clear-pending-signup');
+    await this.client.delete<void>('/auth/google/clear-pending-signup');
   }
 
   async getPendingGoogleLinkProfile(): Promise<GoogleProfile | null> {
@@ -101,7 +104,7 @@ class ApiClient {
   }
 
   async clearGooglePendingLinkProfile(): Promise<void> {
-    await this.client.get<void>('/auth/google/clear-pending-link');
+    await this.client.delete<void>('/auth/google/clear-pending-link');
   }
 
   async googleSignUpComplete(data: GoogleSignUpCompleteData): Promise<AuthResponse> {
@@ -124,8 +127,8 @@ class ApiClient {
     return response.data;
   }
 
-  async getEmailVerificationResendCooldown(): Promise<ResendCooldownEmail> {
-    const response = await this.client.get<ResendCooldownEmail>('/auth/email/resend-cooldown');
+  async getEmailVerificationResendCooldown(): Promise<ResendCooldownResponse> {
+    const response = await this.client.get<ResendCooldownResponse>('/auth/email/resend-cooldown');
     return response.data;
   }
 
@@ -149,8 +152,8 @@ class ApiClient {
     return response.data;
   }
 
-  async getPasswordResetResendCooldown(email: string): Promise<ResendCooldownPasswordReset> {
-    const response = await this.client.get<ResendCooldownPasswordReset>('/auth/password/resend-cooldown', {
+  async getPasswordResetResendCooldown(email: string): Promise<ResendCooldownResponse> {
+    const response = await this.client.get<ResendCooldownResponse>('/auth/password/resend-cooldown', {
       params: { email },
     });
     return response.data;

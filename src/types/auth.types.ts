@@ -39,10 +39,6 @@ export interface GoogleProfile {
   avatarUrl?: string;
 }
 
-export interface ResendCooldownEmail {
-  retryAfterSeconds: number;
-}
-
-export interface ResendCooldownPasswordReset {
+export interface ResendCooldownResponse {
   retryAfterSeconds: number;
 }

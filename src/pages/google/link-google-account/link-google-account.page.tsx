@@ -1,17 +1,23 @@
-import { Logo } from '@/components/logo';
-import { ThemeToggle } from '@/components/theme.toggle';
-import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiClient } from '@/lib/api-client';
+import { AuthLayout } from '@/components/ui/auth-layout';
+import { Button } from '@/components/ui/button';
+import { ErrorBanner } from '@/components/ui/error-banner';
+import { FormHeader } from '@/components/ui/form-header';
 import { useAuth } from '@/contexts/auth.context';
+import { apiClient } from '@/lib/api-client';
+
+type LoadingState = 'idle' | 'linking';
 
 export default function LinkGoogleAccountPage() {
   const navigate = useNavigate();
   const { googleLinkAccount } = useAuth();
   const [profile, setProfile] = useState<{ email: string } | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingState, setLoadingState] = useState<LoadingState>('idle');
+  const [error, setError] = useState<string | undefined>();
   const [fetchingProfile, setFetchingProfile] = useState(true);
+
+  const disabled = loadingState !== 'idle';
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -35,13 +41,14 @@ export default function LinkGoogleAccountPage() {
   }, [navigate]);
 
   async function handleLinkAccount() {
-    setLoading(true);
+    setLoadingState('linking');
+    setError(undefined);
 
     try {
       await googleLinkAccount();
       navigate('/');
     } catch {
-      setLoading(false);
+      setLoadingState('idle');
     }
   }
 
@@ -58,46 +65,29 @@ export default function LinkGoogleAccountPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center gap-5 bg-background px-8 py-6 sm:gap-8 sm:px-6 sm:py-8">
-      <header className="flex w-full max-w-md items-center justify-between">
-        <Logo />
-        <ThemeToggle />
-      </header>
+    <AuthLayout>
+      <FormHeader title="Link your Google account" subtitle="Connect Google to sign in faster next time" />
 
-      <main className="flex w-full max-w-md flex-col">
-        <div className="mb-5 sm:mb-6">
-          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Link your Google account</h1>
-        </div>
+      <ErrorBanner message={error} />
 
-        <div className="bg-border/30 border border-border p-3 mb-6">
-          <p className="text-xs sm:text-sm text-muted-foreground mb-2">
-            You have an account with <span className="font-medium text-foreground">{profile.email}</span>.
-          </p>
-          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-            Link your account to sign in with Google in the future.
-          </p>
-        </div>
+      <div className="bg-border/30 border border-border p-3 mb-6">
+        <p className="text-xs sm:text-sm text-muted-foreground mb-2">
+          You have an account with <span className="font-medium text-foreground">{profile.email}</span>.
+        </p>
+        <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+          Link your account to sign in with Google in the future.
+        </p>
+      </div>
 
-        <div className="space-y-2.5">
-          <Button
-            type="button"
-            onClick={handleLinkAccount}
-            className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium"
-            disabled={loading}
-          >
-            {loading ? 'Linking...' : 'Link account'}
-          </Button>
+      <div className="space-y-2.5">
+        <Button type="button" onClick={handleLinkAccount} disabled={disabled}>
+          {loadingState === 'linking' ? 'Linking...' : 'Link account'}
+        </Button>
 
-          <Button
-            type="button"
-            onClick={handleCancel}
-            className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium border border-border bg-background text-foreground hover:bg-border/50"
-            disabled={loading}
-          >
-            Cancel
-          </Button>
-        </div>
-      </main>
-    </div>
+        <Button type="button" variant="outline" onClick={handleCancel} disabled={disabled}>
+          Cancel
+        </Button>
+      </div>
+    </AuthLayout>
   );
 }
