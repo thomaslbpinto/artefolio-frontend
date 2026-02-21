@@ -8,7 +8,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const baseStyles = cn(
-  'w-full flex items-center justify-center gap-2',
+  'w-full flex items-center justify-center gap-2 rounded-sm',
   'h-9 sm:h-10 px-4',
   'text-xs sm:text-sm font-medium',
   'active:scale-[0.98] transition-all duration-200 ease-out cursor-pointer',

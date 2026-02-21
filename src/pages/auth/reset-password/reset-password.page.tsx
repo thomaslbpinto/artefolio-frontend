@@ -204,7 +204,6 @@ export default function ResetPasswordPage() {
               onChange={handleInputChange}
               placeholder="your@email.com"
               disabled={disabled}
-              className="h-9 sm:h-10 text-sm"
             />
             <FieldError message={errors.email} />
           </div>
@@ -271,7 +270,6 @@ export default function ResetPasswordPage() {
               value={formData.newPassword}
               onChange={handleInputChange}
               disabled={disabled}
-              className="h-9 sm:h-10 text-sm"
             />
             <FieldError message={errors.newPassword} />
           </div>
@@ -286,7 +284,6 @@ export default function ResetPasswordPage() {
               value={formData.confirmPassword}
               onChange={handleInputChange}
               disabled={disabled}
-              className="h-9 sm:h-10 text-sm"
             />
             <FieldError message={errors.confirmPassword} />
           </div>

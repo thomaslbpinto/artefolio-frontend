@@ -100,7 +100,6 @@ export default function SignInPage() {
             onChange={handleInputChange}
             placeholder="your@email.com"
             autoComplete="email"
-            className="h-9 sm:h-10 text-sm"
             disabled={disabled}
           />
           <FieldError message={errors.email} />
@@ -124,7 +123,6 @@ export default function SignInPage() {
             value={formData.password}
             onChange={handleInputChange}
             autoComplete="current-password"
-            className="h-9 sm:h-10 text-sm"
             disabled={disabled}
           />
           <FieldError message={errors.password} />

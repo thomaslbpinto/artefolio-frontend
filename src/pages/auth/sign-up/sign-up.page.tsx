@@ -133,7 +133,6 @@ export default function SignUpPage() {
             onChange={handleInputChange}
             placeholder="Your name"
             autoComplete="name"
-            className="h-9 sm:h-10 text-sm"
             disabled={disabled}
           />
           <FieldError message={errors.name} />
@@ -151,7 +150,6 @@ export default function SignUpPage() {
             onChange={handleInputChange}
             placeholder="username"
             autoComplete="username"
-            className="h-9 sm:h-10 text-sm"
             disabled={disabled}
           />
           <FieldError message={errors.username} />
@@ -169,7 +167,6 @@ export default function SignUpPage() {
             onChange={handleInputChange}
             placeholder="your@email.com"
             autoComplete="email"
-            className="h-9 sm:h-10 text-sm"
             disabled={disabled}
           />
           <FieldError message={errors.email} />
@@ -185,7 +182,6 @@ export default function SignUpPage() {
             value={formData.password}
             onChange={handleInputChange}
             autoComplete="new-password"
-            className="h-9 sm:h-10 text-sm"
             disabled={disabled}
           />
           <FieldError message={errors.password} />

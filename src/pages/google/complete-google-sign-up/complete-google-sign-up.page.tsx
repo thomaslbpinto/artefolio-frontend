@@ -157,7 +157,6 @@ export default function CompleteGoogleSignUpPage() {
             onChange={handleInputChange}
             placeholder="Your name"
             autoComplete="name"
-            className="h-9 sm:h-10 text-sm"
             disabled={disabled}
           />
           <FieldError message={errors.name} />
@@ -175,7 +174,6 @@ export default function CompleteGoogleSignUpPage() {
             onChange={handleInputChange}
             placeholder="username"
             autoComplete="username"
-            className="h-9 sm:h-10 text-sm"
             disabled={disabled}
           />
           <FieldError message={errors.username} />

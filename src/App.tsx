@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/auth.context';
 import { ThemeProvider } from './contexts/theme.context';
-import { ProtectedRoute } from './components/routes/protected.route';
 import { PublicRoute } from './components/routes/public.route';
 import { Layout } from './components/layout';
 
@@ -64,11 +63,9 @@ function App() {
             <Route
               path="/"
               element={
-                <ProtectedRoute>
-                  <Layout>
-                    <HomePage />
-                  </Layout>
-                </ProtectedRoute>
+                <Layout>
+                  <HomePage />
+                </Layout>
               }
             />
             <Route path="*" element={<NotFoundPage />} />
