@@ -184,3 +184,14 @@ export interface Artwork {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+}
+
+export interface ArtworkPaginatedResponse {
+  artworks: Artwork[];
+  pagination: Pagination;
+}

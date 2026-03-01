@@ -1,48 +1,40 @@
-import { ArtworkCard } from './artwork-card';
-
-interface MockArtworkItem {
-  id: string;
-  color: string;
-  heightClass: string;
-}
-
-const COLORS = [
-  'bg-gray-700',
-  'bg-gray-600',
-  'bg-gray-500',
-  'bg-slate-700',
-  'bg-slate-600',
-  'bg-slate-500',
-  'bg-neutral-700',
-  'bg-neutral-600',
-  'bg-neutral-500',
-  'bg-stone-700',
-  'bg-stone-600',
-  'bg-stone-500',
-];
-
-const HEIGHTS = ['h-40', 'h-44', 'h-48', 'h-52', 'h-56', 'h-60', 'h-64', 'h-68', 'h-72', 'h-80'];
-
-function getMockArtworkItems(count = 500): MockArtworkItem[] {
-  return Array.from({ length: count }, (_, i) => ({
-    id: String(i + 1),
-    color: COLORS[Math.floor(Math.random() * COLORS.length)],
-    heightClass: HEIGHTS[Math.floor(Math.random() * HEIGHTS.length)],
-  }));
-}
+import { RegularMasonryGrid } from '@masonry-grid/react';
+import { ArtworkCardFrames } from './masonry/card/artwork-card-frames';
+import { ArtworkSkeletonFrames } from './masonry/skeleton/artwork-skeleton-frames';
+import { useInfiniteArtworks } from '@/hooks/use-infinite-artworks';
+import { useResponsiveArtworkFrameWidth } from '@/hooks/use-responsive-artwork-frame-width';
 
 export function ArtworkGrid() {
+  const { artworks, loading, loadingMore, hasMore, sentinelRef } = useInfiniteArtworks();
+  const frameWidth = useResponsiveArtworkFrameWidth();
+
+  if (!loading && artworks.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <p className="text-md text-muted-foreground">No artworks found. Please try again later.</p>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className="gap-2 [column-width:150px] sm:gap-3 sm:[column-width:180px] lg:gap-4 lg:[column-width:220px]"
-      role="list"
-      aria-label="Artwork grid"
-    >
-      {getMockArtworkItems().map((item) => (
-        <div key={item.id} className="break-inside-avoid" role="listitem">
-          <ArtworkCard color={item.color} heightClass={item.heightClass} />
-        </div>
-      ))}
+    <div className="flex flex-col">
+      <RegularMasonryGrid
+        frameWidth={frameWidth}
+        role="list"
+        aria-label="Artwork grid"
+        className="w-full gap-2 sm:gap-3 lg:gap-4"
+      >
+        {loading ? (
+          <ArtworkSkeletonFrames variant="initial" />
+        ) : (
+          <>
+            <ArtworkCardFrames artworks={artworks} />
+            {loadingMore && <ArtworkSkeletonFrames variant="loading-more" />}
+          </>
+        )}
+      </RegularMasonryGrid>
+
+      {!loading && hasMore && <div ref={sentinelRef} className="min-h-1 w-full" aria-hidden />}
     </div>
   );
 }

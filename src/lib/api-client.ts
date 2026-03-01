@@ -8,7 +8,7 @@ import type {
   User,
   ResendCooldownResponse,
 } from '@/types/auth.types';
-import type { Artwork } from '@/types/artwork.types';
+import type { Artwork, ArtworkPaginatedResponse } from '@/types/artwork.types';
 import type { Collection } from '@/types/collection.types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
@@ -170,6 +170,13 @@ class ApiClient {
 
   async deleteArtwork(id: number): Promise<void> {
     await this.client.delete(`/artwork/${id}`);
+  }
+
+  async fetchArtworksPage(page: number, limit: number): Promise<ArtworkPaginatedResponse> {
+    const response = await this.client.get<ArtworkPaginatedResponse>('/artwork', {
+      params: { page, limit },
+    });
+    return response.data;
   }
 
   async fetchUserCollections(): Promise<Collection[]> {
