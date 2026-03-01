@@ -64,7 +64,8 @@ export default function VerifyEmailPage() {
     event.preventDefault();
     setErrors({});
 
-    if (code.length !== 6) {
+    const normalizedCode = code.trim();
+    if (normalizedCode.length !== 6) {
       setErrors({ code: 'Enter the 6-digit code' });
       return;
     }
@@ -72,7 +73,7 @@ export default function VerifyEmailPage() {
     setLoadingState('verifying');
 
     try {
-      await apiClient.verifyEmailVerificationCode(code);
+      await apiClient.verifyEmailVerificationCode(normalizedCode);
       await refreshUser();
       setLoadingState('redirecting');
     } catch (error: any) {

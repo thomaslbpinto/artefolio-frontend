@@ -13,8 +13,8 @@ export const PublicRoute = ({ children }: { children: JSX.Element }) => {
     );
   }
 
-  if (user) {
-    return <Navigate to="/" />;
+  if (user && !user.emailVerified) {
+    return <Navigate to="/verify-email" />;
   }
 
   return children;

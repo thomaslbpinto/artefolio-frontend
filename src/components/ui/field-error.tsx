@@ -1,7 +1,9 @@
-﻿export function FieldError({ message }: { message?: string }) {
+﻿import { cn } from '@/lib/utils';
+
+export function FieldError({ message, className }: { message?: string; className?: string }) {
   if (!message) {
     return null;
   }
 
-  return <p className="text-[11px] sm:text-xs text-error mt-1">{message}</p>;
+  return <p className={cn('text-[11px] sm:text-xs text-error mt-1', className)}>{message}</p>;
 }

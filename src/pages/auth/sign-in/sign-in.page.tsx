@@ -9,6 +9,7 @@ import { FieldError } from '@/components/ui/field-error';
 import { FormHeader } from '@/components/ui/form-header';
 import { Input } from '@/components/ui/input';
 import { Password } from '@/components/ui/password';
+import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/auth.context';
 import { apiClient } from '@/lib/api-client';
 import { createInputChangeHandler } from '@/lib/form';
@@ -51,7 +52,12 @@ export default function SignInPage() {
     setErrors({});
 
     try {
-      const result = signInSchema.safeParse(formData);
+      const normalizedFormData = {
+        email: formData.email.trim(),
+        password: formData.password.trim(),
+      };
+
+      const result = signInSchema.safeParse(normalizedFormData);
 
       if (!result.success) {
         const fieldErrors: FormErrors = {};
@@ -66,7 +72,7 @@ export default function SignInPage() {
 
       setLoadingState('signing-in');
 
-      await signIn(formData);
+      await signIn(normalizedFormData);
       setTimeout(() => {
         navigate('/');
       }, 1000);
@@ -89,9 +95,7 @@ export default function SignInPage() {
 
       <form className="space-y-3 sm:space-y-3.5" onSubmit={handleSubmit} noValidate>
         <div className="space-y-1.5">
-          <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="email">
-            Email
-          </label>
+          <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             name="email"
@@ -107,9 +111,7 @@ export default function SignInPage() {
 
         <div className="space-y-1.5">
           <div className="flex items-center justify-between gap-2">
-            <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="password">
-              Password
-            </label>
+            <Label htmlFor="password">Password</Label>
             <a
               href="/reset-password"
               className="text-xs sm:text-sm font-medium text-primary hover:underline whitespace-nowrap"

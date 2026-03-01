@@ -1,4 +1,4 @@
-import { FiSun, FiMoon } from 'react-icons/fi';
+import { LuSun, LuMoon } from 'react-icons/lu';
 import { useTheme } from '@/contexts/theme.context';
 
 export function ThemeToggle({ size }: { size: number }) {
@@ -11,7 +11,7 @@ export function ThemeToggle({ size }: { size: number }) {
       onClick={toggleTheme}
       aria-label="Toggle theme"
     >
-      {theme === 'light' ? <FiMoon size={size} /> : <FiSun size={size} />}
+      {theme === 'light' ? <LuMoon size={size} /> : <LuSun size={size} />}
     </button>
   );
 }

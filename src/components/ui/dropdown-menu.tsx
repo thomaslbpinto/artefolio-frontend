@@ -80,7 +80,7 @@ export function DropdownMenu({
                   onClick={() => handleItemSelect(item)}
                   className={cn(
                     'flex w-full items-start justify-center gap-3 p-3 text-left',
-                    'transition-colors hover:bg-foreground/5 cursor-pointer rounded-sm',
+                    'transition-colors hover:bg-border/50 cursor-pointer rounded-sm',
                   )}
                 >
                   <span className="mt-1 flex items-center justify-center">{item.icon}</span>

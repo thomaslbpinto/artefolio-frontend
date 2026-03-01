@@ -27,7 +27,7 @@ function getMockArtworkItems(count = 500): MockArtworkItem[] {
   return Array.from({ length: count }, (_, i) => ({
     id: String(i + 1),
     color: COLORS[Math.floor(Math.random() * COLORS.length)],
-    heightClass: HEIGHTS[i % HEIGHTS.length],
+    heightClass: HEIGHTS[Math.floor(Math.random() * HEIGHTS.length)],
   }));
 }
 

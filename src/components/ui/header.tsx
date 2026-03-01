@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { FiSearch } from 'react-icons/fi';
+import { LuSearch } from 'react-icons/lu';
 import { useAuth } from '@/contexts/auth.context';
 import { ThemeToggle } from '@/components/theme.toggle';
 import { Logo } from '../logo';
 import { Input } from './input';
 import { Button } from './button';
 import { HomeIcon } from './icons/home-icon';
-import { CreateDropdownMenu } from './create-dropdown-menu';
+import { CreateDropdownMenu } from '../create-dropdown-menu';
 import { ProfileIcon } from './icons/profile-icon';
 import { SignOutIcon } from './icons/sign-out-icon';
 import { cn } from '@/lib/utils';
@@ -18,7 +18,7 @@ export function Header() {
   return (
     <header
       className={cn(
-        'fixed top-0 left-0 right-0 z-10 w-full border-b border-border bg-background',
+        'fixed top-0 left-0 right-0 z-51 w-full border-b border-border bg-background',
         'h-12 py-2 px-3',
         'sm:h-14 sm:py-3 sm:px-4',
         'lg:h-16',
@@ -37,7 +37,7 @@ export function Header() {
         </div>
 
         <div className="relative min-w-0 flex-1">
-          <FiSearch
+          <LuSearch
             size={18}
             className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground sm:left-2.5"
             aria-hidden

@@ -8,6 +8,8 @@ import type {
   User,
   ResendCooldownResponse,
 } from '@/types/auth.types';
+import type { Artwork } from '@/types/artwork.types';
+import type { Collection } from '@/types/collection.types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -156,6 +158,22 @@ class ApiClient {
     const response = await this.client.get<ResendCooldownResponse>('/auth/password/resend-cooldown', {
       params: { email },
     });
+    return response.data;
+  }
+
+  async createArtwork(data: FormData): Promise<Artwork> {
+    const response = await this.client.post<Artwork>('/artwork', data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  }
+
+  async deleteArtwork(id: number): Promise<void> {
+    await this.client.delete(`/artwork/${id}`);
+  }
+
+  async fetchUserCollections(): Promise<Collection[]> {
+    const response = await this.client.get<Collection[]>('/collection');
     return response.data;
   }
 }

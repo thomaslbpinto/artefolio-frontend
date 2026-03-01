@@ -1,19 +1,19 @@
 import { useNavigate } from 'react-router-dom';
-import { DropdownMenu, type DropdownMenuItem } from './dropdown-menu';
-import { CreateIcon } from './icons/create-icon';
-import { FiImage, FiLayout } from 'react-icons/fi';
+import { DropdownMenu, type DropdownMenuItem } from './ui/dropdown-menu';
+import { CreateIcon } from './ui/icons/create-icon';
+import { LuFolders, LuImage } from 'react-icons/lu';
 
 const createDropdownMenuItems: (navigate: ReturnType<typeof useNavigate>) => DropdownMenuItem[] = (navigate) => [
   {
     id: 'artwork',
-    icon: <FiImage className="text-muted-foreground" size={24} />,
+    icon: <LuImage className="text-muted-foreground" size={22} />,
     title: 'Artwork',
     description: 'Publish your digital or physical artwork to share it with others',
     onSelect: () => navigate('/artwork/create'),
   },
   {
     id: 'collection',
-    icon: <FiLayout className="text-muted-foreground" size={24} />,
+    icon: <LuFolders className="text-muted-foreground" size={22} />,
     title: 'Collection',
     description: 'Create a collection to organize and showcase your artworks',
     onSelect: () => navigate('/collection/create'),

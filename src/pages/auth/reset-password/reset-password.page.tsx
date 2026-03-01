@@ -9,6 +9,7 @@ import { FormHeader } from '@/components/ui/form-header';
 import { Input } from '@/components/ui/input';
 import { OtpInput } from '@/components/ui/otp-input';
 import { Password } from '@/components/ui/password';
+import { Label } from '@/components/ui/label';
 import { useCooldown } from '@/hooks/use-cooldown';
 import { apiClient } from '@/lib/api-client';
 import { createInputChangeHandler } from '@/lib/form';
@@ -71,7 +72,8 @@ export default function ResetPasswordPage() {
     event.preventDefault();
     setErrors({});
 
-    const result = emailSchema.safeParse({ email: formData.email });
+    const normalizedEmail = formData.email.trim();
+    const result = emailSchema.safeParse({ email: normalizedEmail });
 
     if (!result.success) {
       setErrors({ email: result.error.issues[0]?.message ?? 'Invalid email' });
@@ -81,8 +83,8 @@ export default function ResetPasswordPage() {
     setLoadingState('sending');
 
     try {
-      await apiClient.sendPasswordResetEmail(formData.email);
-      const { retryAfterSeconds } = await apiClient.getPasswordResetResendCooldown(formData.email);
+      await apiClient.sendPasswordResetEmail(normalizedEmail);
+      const { retryAfterSeconds } = await apiClient.getPasswordResetResendCooldown(normalizedEmail);
       startCooldown(retryAfterSeconds || 60);
       setStep('code');
     } catch (error: any) {
@@ -101,7 +103,8 @@ export default function ResetPasswordPage() {
     event.preventDefault();
     setErrors({});
 
-    if (code.length !== 6) {
+    const normalizedCode = code.trim();
+    if (normalizedCode.length !== 6) {
       setErrors({ code: 'Enter the 6-digit code' });
       return;
     }
@@ -109,7 +112,7 @@ export default function ResetPasswordPage() {
     setLoadingState('verifying');
 
     try {
-      await apiClient.verifyPasswordResetCode(formData.email, code);
+      await apiClient.verifyPasswordResetCode(formData.email.trim(), normalizedCode);
       setStep('password');
     } catch (error: any) {
       setErrors({ submit: error.response?.data?.message || 'Invalid code. Please try again.' });
@@ -123,7 +126,7 @@ export default function ResetPasswordPage() {
     setLoadingState('resending');
 
     try {
-      await apiClient.sendPasswordResetEmail(formData.email);
+      await apiClient.sendPasswordResetEmail(formData.email.trim());
       startCooldown();
     } catch (error: any) {
       const retryAfterSeconds = error.response?.data?.retryAfterSeconds;
@@ -148,9 +151,16 @@ export default function ResetPasswordPage() {
     event.preventDefault();
     setErrors({});
 
+    const normalizedFormData = {
+      email: formData.email.trim(),
+      newPassword: formData.newPassword.trim(),
+      confirmPassword: formData.confirmPassword.trim(),
+    };
+    const normalizedCode = code.trim();
+
     const result = resetPasswordSchema.safeParse({
-      newPassword: formData.newPassword,
-      confirmPassword: formData.confirmPassword,
+      newPassword: normalizedFormData.newPassword,
+      confirmPassword: normalizedFormData.confirmPassword,
     });
 
     if (!result.success) {
@@ -167,7 +177,7 @@ export default function ResetPasswordPage() {
     setLoadingState('resetting');
 
     try {
-      await apiClient.resetPassword(formData.email, code, formData.newPassword);
+      await apiClient.resetPassword(normalizedFormData.email, normalizedCode, normalizedFormData.newPassword);
       setLoadingState('redirecting');
     } catch (error: any) {
       setErrors({ submit: error.response?.data?.message || 'Failed to reset password. Please try again.' });
@@ -193,9 +203,7 @@ export default function ResetPasswordPage() {
       {step === 'email' && (
         <form className="space-y-3 sm:space-y-3.5" onSubmit={handleSendCode} noValidate>
           <div className="space-y-1.5">
-            <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="email">
-              Email
-            </label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               name="email"
@@ -261,9 +269,7 @@ export default function ResetPasswordPage() {
       {step === 'password' && (
         <form className="space-y-3 sm:space-y-3.5" onSubmit={handleResetPassword} noValidate>
           <div className="space-y-1.5">
-            <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="newPassword">
-              New password
-            </label>
+            <Label htmlFor="newPassword">New password</Label>
             <Password
               id="newPassword"
               name="newPassword"
@@ -275,9 +281,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="confirmPassword">
-              Confirm password
-            </label>
+            <Label htmlFor="confirmPassword">Confirm password</Label>
             <Password
               id="confirmPassword"
               name="confirmPassword"

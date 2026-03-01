@@ -7,6 +7,7 @@ import { ErrorBanner } from '@/components/ui/error-banner';
 import { FieldError } from '@/components/ui/field-error';
 import { FormHeader } from '@/components/ui/form-header';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/auth.context';
 import { apiClient } from '@/lib/api-client';
 import { createInputChangeHandler } from '@/lib/form';
@@ -73,7 +74,12 @@ export default function CompleteGoogleSignUpPage() {
     setErrors({});
 
     try {
-      const result = completeSignUpSchema.safeParse(formData);
+      const normalizedFormData = {
+        name: formData.name.trim(),
+        username: formData.username.trim(),
+      };
+
+      const result = completeSignUpSchema.safeParse(normalizedFormData);
 
       if (!result.success) {
         const fieldErrors: FormErrors = {};
@@ -88,10 +94,7 @@ export default function CompleteGoogleSignUpPage() {
 
       setLoadingState('submitting');
 
-      await googleSignUpComplete({
-        name: formData.name,
-        username: formData.username,
-      });
+      await googleSignUpComplete(normalizedFormData);
       setTimeout(() => {
         navigate('/');
       }, 1500);
@@ -146,9 +149,7 @@ export default function CompleteGoogleSignUpPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="name">
-            Name
-          </label>
+          <Label htmlFor="name">Name</Label>
           <Input
             id="name"
             name="name"
@@ -163,9 +164,7 @@ export default function CompleteGoogleSignUpPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="username">
-            Username
-          </label>
+          <Label htmlFor="username">Username</Label>
           <Input
             id="username"
             name="username"

@@ -9,6 +9,7 @@ import { FieldError } from '@/components/ui/field-error';
 import { FormHeader } from '@/components/ui/form-header';
 import { Input } from '@/components/ui/input';
 import { Password } from '@/components/ui/password';
+import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/auth.context';
 import { apiClient } from '@/lib/api-client';
 import { createInputChangeHandler } from '@/lib/form';
@@ -57,7 +58,14 @@ export default function SignUpPage() {
     setErrors({});
 
     try {
-      const result = signUpSchema.safeParse(formData);
+      const normalizedFormData = {
+        name: formData.name.trim(),
+        username: formData.username.trim(),
+        email: formData.email.trim(),
+        password: formData.password.trim(),
+      };
+
+      const result = signUpSchema.safeParse(normalizedFormData);
 
       if (!result.success) {
         const fieldErrors: FormErrors = {};
@@ -72,9 +80,9 @@ export default function SignUpPage() {
 
       setLoadingState('signing-up');
 
-      await signUp(formData);
+      await signUp(normalizedFormData);
       setTimeout(() => {
-        navigate('/');
+        navigate('/verify-email');
       }, 1000);
     } catch (error: any) {
       if (error.response?.status === 409) {
@@ -122,9 +130,7 @@ export default function SignUpPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="name">
-            Name
-          </label>
+          <Label htmlFor="name">Name</Label>
           <Input
             id="name"
             name="name"
@@ -139,9 +145,7 @@ export default function SignUpPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="username">
-            Username
-          </label>
+          <Label htmlFor="username">Username</Label>
           <Input
             id="username"
             name="username"
@@ -156,9 +160,7 @@ export default function SignUpPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="email">
-            Email
-          </label>
+          <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             name="email"
@@ -173,9 +175,7 @@ export default function SignUpPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs sm:text-sm font-medium text-muted-foreground" htmlFor="password">
-            Password
-          </label>
+          <Label htmlFor="password">Password</Label>
           <Password
             id="password"
             name="password"

@@ -1,4 +1,4 @@
-import { FiPlusSquare } from 'react-icons/fi';
+import { LuSquarePlus } from 'react-icons/lu';
 import { IconButton } from './base/icon-button';
 import type { IconButtonProps } from './base/icon-button';
 
@@ -11,6 +11,6 @@ const title = 'Create';
 
 export function CreateIcon({ onClick, isActive, ...props }: CreateIconProps) {
   return (
-    <IconButton icon={FiPlusSquare} title={title} aria-label={title} onClick={onClick} isActive={isActive} {...props} />
+    <IconButton icon={LuSquarePlus} title={title} aria-label={title} onClick={onClick} isActive={isActive} {...props} />
   );
 }

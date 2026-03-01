@@ -1,4 +1,4 @@
-import { FiLogOut } from 'react-icons/fi';
+import { LuLogOut } from 'react-icons/lu';
 import { IconButton } from './base/icon-button';
 import type { IconButtonProps } from './base/icon-button';
 import { useAuth } from '@/contexts/auth.context';
@@ -17,5 +17,5 @@ export function SignOutIcon(props: SignOutIconProps) {
     navigate('/sign-in');
   };
 
-  return <IconButton icon={FiLogOut} onClick={handleSignOut} title={title} aria-label={title} {...props} />;
+  return <IconButton icon={LuLogOut} onClick={handleSignOut} title={title} aria-label={title} {...props} />;
 }

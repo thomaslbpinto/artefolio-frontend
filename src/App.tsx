@@ -10,8 +10,10 @@ import CompleteGoogleSignUpPage from './pages/google/complete-google-sign-up/com
 import LinkGoogleAccountPage from './pages/google/link-google-account/link-google-account.page';
 import VerifyEmailPage from './pages/auth/verify-email/verify-email.page';
 import ResetPasswordPage from './pages/auth/reset-password/reset-password.page';
+import CreateArtworkPage from './pages/artwork/create-artwork.page';
 import HomePage from './pages/home/home.page';
 import NotFoundPage from './pages/not-found.page';
+import { ProtectedRoute } from './components/routes/protected.route';
 
 function App() {
   return (
@@ -61,11 +63,23 @@ function App() {
               }
             />
             <Route
+              path="/artwork/create"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <CreateArtworkPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/"
               element={
-                <Layout>
-                  <HomePage />
-                </Layout>
+                <PublicRoute>
+                  <Layout>
+                    <HomePage />
+                  </Layout>
+                </PublicRoute>
               }
             />
             <Route path="*" element={<NotFoundPage />} />
