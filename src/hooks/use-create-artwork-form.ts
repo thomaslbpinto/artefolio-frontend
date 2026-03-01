@@ -193,7 +193,7 @@ export function useCreateArtworkForm(config: UseCreateArtworkFormConfig = {}) {
       const payload = buildArtworkPayload(formData, uploadedImages, tags);
       const artwork = await apiClient.createArtwork(payload);
       config.onSuccess?.(artwork);
-    } catch (error: unknown) {
+    } catch (error: any) {
       const message = error.response?.data?.message || 'Failed to create artwork. Please try again.';
       setErrors({ submit: message });
     } finally {
