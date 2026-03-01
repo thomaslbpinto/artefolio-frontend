@@ -22,7 +22,7 @@ export function ArtworkGrid() {
         frameWidth={frameWidth}
         role="list"
         aria-label="Artwork grid"
-        className="w-full gap-2 sm:gap-3 lg:gap-4"
+        className="w-full gap-2 sm:gap-3 lg:gap-4 overflow-visible!"
       >
         {loading ? (
           <ArtworkSkeletonFrames variant="initial" />
