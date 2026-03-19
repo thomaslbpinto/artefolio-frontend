@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
-import { Link } from 'react-router-dom';
+import type { MouseEvent } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 type LogoSize = 'sm' | 'md' | 'lg';
 
@@ -8,8 +9,9 @@ interface LogoProps {
 }
 
 export const Logo = ({ size }: LogoProps) => {
-  let textSize = '';
+  const location = useLocation();
 
+  let textSize = '';
   if (size === 'sm') {
     textSize = 'text-2xl';
   } else if (size === 'md') {
@@ -18,10 +20,17 @@ export const Logo = ({ size }: LogoProps) => {
     textSize = 'text-4xl';
   }
 
+  const handleLogoClick = (event: MouseEvent) => {
+    if (location.pathname === '/') {
+      event.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
-    <Link to="/" title="Go to home">
+    <Link to="/" title="Go to home" onClick={handleLogoClick}>
       <span>
-        <div className={cn('flex flex-row select-none', textSize)}>
+        <div className={cn('flex flex-row select-none leading-none', textSize)}>
           <span className="font-extrabold text-primary">arte</span>
           <span className="font-extrabold text-foreground">folio</span>
         </div>

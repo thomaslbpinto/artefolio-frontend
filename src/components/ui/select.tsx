@@ -20,6 +20,7 @@ type SelectProps = {
   emptyMessage?: string;
   className?: string;
   renderOption?: (option: SelectOption) => ReactNode;
+  renderOptionInListOnly?: boolean;
   renderFooter?: (onClose: () => void) => ReactNode;
 };
 
@@ -66,6 +67,7 @@ export function Select({
   emptyMessage = 'No results found',
   className,
   renderOption,
+  renderOptionInListOnly = false,
   renderFooter,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
@@ -280,7 +282,7 @@ export function Select({
             )}
           >
             {selectedOption ? (
-              renderOption ? (
+              renderOption && !renderOptionInListOnly ? (
                 renderOption(selectedOption)
               ) : (
                 <span className="truncate">{selectedOption.label}</span>

@@ -17,7 +17,7 @@ import { ArtworkImageUploader } from '@/components/artwork/image/artwork-image-u
 import { ArtworkImagePreviewModal } from '@/components/artwork/image/artwork-image-preview-modal';
 import { ArtworkTagsInput } from '@/components/artwork/artwork-tags-input';
 import { ArtworkCollectionSelect } from '@/components/artwork/artwork-collection-select';
-import { ArtworkPageHeader } from '@/components/artwork/artwork-page-header';
+import { CreateArtworkPageHeader } from '@/components/artwork/create-artwork-page-header';
 import { ArtworkTechnicalDetails } from '@/components/artwork/artwork-technical-details';
 
 const MAX_IMAGES = 8;
@@ -178,7 +178,7 @@ export default function CreateArtworkPage() {
 
   return (
     <div className="mx-auto">
-      <ArtworkPageHeader
+      <CreateArtworkPageHeader
         title="New Artwork"
         visibility={formData.visibility}
         onToggleVisibility={toggleVisibility}

@@ -8,7 +8,7 @@ import type {
   User,
   ResendCooldownResponse,
 } from '@/types/auth.types';
-import type { Artwork, ArtworkPaginatedResponse } from '@/types/artwork.types';
+import type { Artwork, ArtworkPaginatedResponse, ArtworkFilters } from '@/types/artwork.types';
 import type { Collection } from '@/types/collection.types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
@@ -172,9 +172,43 @@ class ApiClient {
     await this.client.delete(`/artwork/${id}`);
   }
 
-  async fetchArtworksPage(page: number, limit: number): Promise<ArtworkPaginatedResponse> {
+  async fetchArtworksPage(
+    page: number,
+    limit: number,
+    filters?: Partial<Omit<ArtworkFilters, 'page' | 'limit'>>,
+  ): Promise<ArtworkPaginatedResponse> {
+    const params = new URLSearchParams();
+    params.set('page', String(page));
+    params.set('limit', String(limit));
+
+    if (filters) {
+      const { search, type, technique, genre, country, yearMin, yearMax } = filters;
+
+      if (search && search.trim()) {
+        params.set('search', search.trim());
+      }
+      if (type) {
+        params.set('type', type);
+      }
+      if (country && country.trim()) {
+        params.set('country', country.trim());
+      }
+      if (Array.isArray(technique) && technique.length > 0) {
+        params.set('technique', technique.join(','));
+      }
+      if (Array.isArray(genre) && genre.length > 0) {
+        params.set('genre', genre.join(','));
+      }
+      if (typeof yearMin === 'number') {
+        params.set('yearMin', String(yearMin));
+      }
+      if (typeof yearMax === 'number') {
+        params.set('yearMax', String(yearMax));
+      }
+    }
+
     const response = await this.client.get<ArtworkPaginatedResponse>('/artwork', {
-      params: { page, limit },
+      params,
     });
     return response.data;
   }

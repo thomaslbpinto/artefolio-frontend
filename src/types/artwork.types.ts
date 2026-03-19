@@ -1,13 +1,13 @@
 export const ArtworkType = {
-  DIGITAL: 'digital',
-  PHYSICAL: 'physical',
+  DIGITAL: 'Digital',
+  PHYSICAL: 'Physical',
 } as const;
 
 export type ArtworkType = (typeof ArtworkType)[keyof typeof ArtworkType];
 
 export const Visibility = {
-  PUBLIC: 'public',
-  PRIVATE: 'private',
+  PUBLIC: 'Public',
+  PRIVATE: 'Private',
 } as const;
 
 export type Visibility = (typeof Visibility)[keyof typeof Visibility];
@@ -194,4 +194,22 @@ export interface Pagination {
 export interface ArtworkPaginatedResponse {
   artworks: Artwork[];
   pagination: Pagination;
+}
+
+export interface ArtworkCardFramesData {
+  id: number;
+  title: string;
+  imageUrl: string;
+  width: number;
+  height: number;
+}
+
+export interface ArtworkFilters extends Pagination {
+  search?: string;
+  type?: ArtworkType;
+  technique?: ArtworkTechnique[];
+  genre?: ArtworkGenre[];
+  country?: string;
+  yearMin?: number;
+  yearMax?: number;
 }

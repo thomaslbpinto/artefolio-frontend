@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { ARTWORK_GENRES, ARTWORK_TECHNIQUES, ArtworkType } from '@/types/artwork.types';
 import type { ArtworkFormData, ArtworkFormErrors } from '@/hooks/use-create-artwork-form';
 import { Textarea } from '../ui/textarea';
-import countries from '@/constants/countries-en.json';
+import { COUNTRIES_LIST, getAlpha2ByCountryName } from '@/lib/country.utils';
 
 type ArtworkTechnicalDetailsProps = {
   formData: ArtworkFormData;
@@ -29,16 +29,10 @@ type ArtworkTechnicalDetailsProps = {
   maxArtworkTechniques: number;
 };
 
-const COUNTRIES_LIST = countries as { alpha2: string; name: string }[];
-
 const COUNTRY_OPTIONS: SelectOption[] = COUNTRIES_LIST.map((c) => ({
   value: c.name,
   label: c.name,
 }));
-
-function getAlpha2ByCountryName(name: string): string | undefined {
-  return COUNTRIES_LIST.find((c) => c.name === name)?.alpha2;
-}
 
 export function ArtworkTechnicalDetails({
   formData,
@@ -147,6 +141,7 @@ export function ArtworkTechnicalDetails({
                   </>
                 );
               }}
+              renderOptionInListOnly
             />
           </div>
         </div>
@@ -161,10 +156,11 @@ export function ArtworkTechnicalDetails({
               onChange={onGenreChange}
               maxItems={maxArtworkGenres}
               options={ARTWORK_GENRES}
-              placeholder="Search genres"
+              placeholder="Select one or more genres"
               disabled={disabled}
               error={genreError ?? errors.genre}
               onErrorChange={setGenreError}
+              searchable
             />
           </div>
 
@@ -177,10 +173,11 @@ export function ArtworkTechnicalDetails({
               onChange={onTechniqueChange}
               maxItems={maxArtworkTechniques}
               options={ARTWORK_TECHNIQUES}
-              placeholder="Search techniques"
+              placeholder="Select one or more techniques"
               disabled={disabled}
               error={techniqueError ?? errors.technique}
               onErrorChange={setTechniqueError}
+              searchable
             />
           </div>
         </div>

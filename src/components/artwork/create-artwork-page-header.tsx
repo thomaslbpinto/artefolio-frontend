@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Visibility } from '@/types/artwork.types';
 
-type ArtworkPageHeaderProps = {
+type CreateArtworkPageHeaderProps = {
   title: string;
   visibility: Visibility;
   onToggleVisibility: () => void;
@@ -11,7 +11,13 @@ type ArtworkPageHeaderProps = {
   formId: string;
 };
 
-export function ArtworkPageHeader({ title, visibility, onToggleVisibility, loading, formId }: ArtworkPageHeaderProps) {
+export function CreateArtworkPageHeader({
+  title,
+  visibility,
+  onToggleVisibility,
+  loading,
+  formId,
+}: CreateArtworkPageHeaderProps) {
   const isPublicVisibility = visibility === Visibility.PUBLIC;
 
   return (

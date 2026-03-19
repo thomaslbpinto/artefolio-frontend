@@ -11,7 +11,7 @@ export function ArtworkGrid() {
   if (!loading && artworks.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
-        <p className="text-md text-muted-foreground">No artworks found. Please try again later.</p>
+        <p className="text-md text-muted-foreground">No artworks found.</p>
       </div>
     );
   }
@@ -22,7 +22,7 @@ export function ArtworkGrid() {
         frameWidth={frameWidth}
         role="list"
         aria-label="Artwork grid"
-        className="w-full gap-2 sm:gap-3 lg:gap-4 overflow-visible!"
+        className="w-full gap-2 sm:gap-3 lg:gap-4"
       >
         {loading ? (
           <ArtworkSkeletonFrames variant="initial" />

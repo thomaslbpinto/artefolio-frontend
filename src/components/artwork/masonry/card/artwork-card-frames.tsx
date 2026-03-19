@@ -1,5 +1,5 @@
 import { Frame } from '@masonry-grid/react';
-import type { ArtworkCardFramesData } from '@/hooks/use-infinite-artworks';
+import type { ArtworkCardFramesData } from '@/types/artwork.types';
 import { ArtworkCard } from './artwork-card';
 
 interface ArtworkCardFramesProps {
